@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Adventure World</title>
+<link rel="icon" href="../favicon.png">
+<link href="../style.css" rel="stylesheet" />
+</head>
+
+<body>
+
+<header class="nav" style="background: linear-gradient(90deg, #1B33AC, #BB1D34);">
+
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+
+    <div class="dropdown">
+        <div class="dropbtn">Les Parcs</div>
+        <div class="content">
+            <a href="park.html">Parc Principal</a>
+            <a href="adventureworld.html">Adventure World</a>
+        </div>
+    </div>
+
+    <div class="dropdown">
+        <div class="dropbtn">Lands</div>
+        <div class="content">
+            <a href="worldpremiere.html">World Premiere</a>
+            <a href="adventureway.html">Adventure Way</a>
+            <a href="worldofpixar.html">World Of Pixar</a>
+            <a href="worldoffrozen.html">World Of Frozen</a>
+            <a href="avengerscampus.html">Avengers Campus</a>
+        </div>
+    </div>
+
+</header>
+
+<h1 class="titre">Adventure World</h1>
+
+
+
+<script>
+document.querySelectorAll(".dropbtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+
+        let content = btn.nextElementSibling;
+
+        // Ferme les autres menus
+        document.querySelectorAll(".content").forEach(menu => {
+            if(menu !== content) menu.classList.remove("open");
+        });
+
+        content.classList.toggle("open");
+    });
+});
+</script>
+
+<div class="map">
+  <img src="../adventureworld.png">
+
+  <a href="worldpremiere.html" class="rectangle" style="width: 10.6%; height: 6.1%; bottom: 22.2%; left: 24.7%;">
+  </a>
+
+  <a href="worldoffrozen.html" class="rectangle" style="width: 11%; height: 5.8%; top: 21.5%; right: 28.4%;">
+  </a>
+
+  <a href="avengerscampus.html" class="rectangle" style="width: 11%; height: 4.8%; top: 54.8%; left: 6.6%;">
+  </a>
+
+  <a href="worldofpixar.html" class="rectangle" style="width: 10%; height: 4%; top: 55.5%; right: 8.6%;">
+  </a>
+
+  <a href="adventureway.html" class="rectangle" style="width: 11%; height: 4.4%; bottom: 62%; right: 59.75%;">
+  </a>
+</div>
+
+
+<audio id="music" src="../Disney Adventure World - Disney Cascade of Lights  We Can Be Heros.mp3" loop></audio>
+<script>
+const music = document.getElementById("music");
+
+window.addEventListener("load", () => {
+    // RESTAURER LE TEMPS
+    let time = parseFloat(localStorage.getItem("musicTime"));
+    if (!isNaN(time)) {
+        music.currentTime = time;
+    }
+
+    // RESTAURER LE VOLUME
+    let savedVolume = parseFloat(localStorage.getItem("musicVolume"));
+    if (!isNaN(savedVolume)) {
+        music.volume = savedVolume;
+        volumeSlider.value = savedVolume;
+    } else {
+        music.volume = 0.5;
+        volumeSlider.value = 0.5;
+    }
+
+    // RESTAURER L'ÉTAT DE LECTURE
+    let wasPlaying = localStorage.getItem("musicPlaying") === "true";
+    if (wasPlaying) {
+        let promise = music.play();
+        if (promise !== undefined) {
+            promise.catch(() => {
+                // Navigation inter-pages peut empêcher autoplay sans interaction utilisateur
+                console.log("Lecture automatique bloquée, appuyez sur Play.");
+            });
+        }
+    } else {
+        music.pause();
+    }
+
+    playPauseBtn.textContent = music.paused ? "▶️" : "⏸️";
+});
+
+/* SAUVEGARDER EN CONTINU */
+setInterval(() => {
+    localStorage.setItem("musicTime", music.currentTime);
+}, 500);
+</script>
+<script>
+window.addEventListener("beforeunload", () => {
+    localStorage.setItem("musicTime", music.currentTime);
+});
+</script>
+
+<!-- Menu de contrôle de la musique -->
+<div id="music-floating-btn">🎵</div>
+<div id="music-controls" class="hidden">
+    <button id="play-pause-btn">⏸️</button>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+</div>
+
+<script>
+const playPauseBtn = document.getElementById("play-pause-btn");
+const volumeSlider = document.getElementById("volume-slider");
+const floatingBtn = document.getElementById("music-floating-btn");
+const controls = document.getElementById("music-controls");
+
+// Initialiser le volume au chargement (sera écrasé par la restauration ci-dessus)
+music.volume = 0.5;
+
+// Toggle contrôle
+floatingBtn.addEventListener("click", () => {
+    controls.classList.toggle("hidden");
+});
+
+// Lecture/pause
+playPauseBtn.addEventListener("click", () => {
+    if (music.paused) {
+        music.play();
+        playPauseBtn.textContent = "⏸️";
+        localStorage.setItem("musicPlaying", "true");
+    } else {
+        music.pause();
+        playPauseBtn.textContent = "▶️";
+        localStorage.setItem("musicPlaying", "false");
+    }
+});
+
+// Slider volume
+volumeSlider.addEventListener("input", () => {
+    music.volume = parseFloat(volumeSlider.value);
+    localStorage.setItem("musicVolume", music.volume.toString());
+});
+
+// Mettre à jour l'icône quand la musique se termine
+music.addEventListener("ended", () => {
+    playPauseBtn.textContent = "▶️";
+    localStorage.setItem("musicPlaying", "false");
+});
+
+// Sauvegarder le statut lors de changement immédiat
+music.addEventListener("pause", () => {
+    localStorage.setItem("musicPlaying", "false");
+});
+
+music.addEventListener("play", () => {
+    localStorage.setItem("musicPlaying", "true");
+});
+</script>
+
+</body>
+
+
+
+</html>
+

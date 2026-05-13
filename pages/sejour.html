@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Checklist Séjour</title>
+<link rel="icon" href="../favicon.png">
+<link href="../style.css" rel="stylesheet" />
+
+<style>
+body {
+    background-color: #d8c7a3;
+    padding: 0;
+    margin: 0;
+}
+
+/* Bandeau date */
+.date-box {
+    position: absolute;
+    top: 90px;
+    left: 20px;
+    background: #eee;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: text;
+}
+
+/* Barre recherche */
+.search-container {
+    margin: 120px auto 20px;
+    width: 60%;
+    display: flex;
+    align-items: center;
+    background: #eee;
+    border-radius: 30px;
+    padding: 10px 20px;
+    position: relative;
+}
+
+.search-container input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 20px;
+    outline: none;
+}
+
+.suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 100;
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion-item:hover {
+    background: #f0f0f0;
+}
+
+.save-list-panel {
+    width: 60%;
+    margin: 0 auto 20px auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.save-list-panel select,
+.save-list-panel button {
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: none;
+    background: white;
+    color: #5D37A6;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.checklist {
+    width: 60%;
+    margin: auto;
+    background: #e9dcc0;
+    padding: 30px;
+    border-radius: 20px;
+}
+
+.category {
+    margin-top: 20px;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.delete {
+    cursor: pointer;
+    font-weight: bold;
+    color: red;
+}
+
+@media (max-width: 768px) {
+
+    .search-container,
+    .checklist,
+    .save-list-panel {
+        width: 90%;
+    }
+
+    .date-box {
+        position: static;
+        margin: 15px;
+        display: inline-block;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<header class="nav">
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+
+    <a href="numb_coaster.html" class="dropbtn">Nombre Attraction</a>
+
+    <a href="../planning.html" class="dropbtn">Planning</a>
+
+    <a href="checklist.html" class="dropbtn">Checklist</a>
+</header>
+
+<!-- DATE -->
+<div class="date-box" contenteditable="true">
+DU ... au ... 2026
+</div>
+
+<!-- RECHERCHE -->
+<div class="search-container">
+    <input type="text" id="search" placeholder="Rechercher...">
+    <div class="suggestions" id="suggestions"></div>
+</div>
+
+<!-- SAUVEGARDE -->
+<div class="save-list-panel">
+
+    <select id="saved-lists-select">
+        <option value="">Sélectionner une checklist</option>
+    </select>
+
+    <button id="new-list-btn">
+        ➕ Nouvelle liste
+    </button>
+
+    <button id="save-list-btn">
+        💾 Sauvegarder
+    </button>
+
+    <button id="delete-list-btn">
+        🗑️ Supprimer
+    </button>
+
+</div>
+
+<!-- CHECKLIST -->
+<div class="checklist">
+
+    <h2>Checklist Séjour</h2>
+
+    <div class="category" id="attractions">
+        <h3><u>Attractions :</u></h3>
+        <div></div>
+    </div>
+
+    <div class="category" id="spectacles">
+        <h3><u>Spectacles :</u></h3>
+        <div></div>
+    </div>
+
+    <div class="category" id="personnages">
+        <h3><u>Personnages :</u></h3>
+        <div></div>
+    </div>
+
+    <div class="category" id="autres">
+        <h3><u>Autres :</u></h3>
+        <div></div>
+    </div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    set,
+    onValue,
+    remove,
+    push
+}
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+
+// FIREBASE
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyBb-2GlOsnUDzDXZ8-mgd6XIr8ny4ZkJoo",
+
+    authDomain:
+    "my-disneyland-paris.firebaseapp.com",
+
+    databaseURL:
+    "https://my-disneyland-paris-default-rtdb.europe-west1.firebasedatabase.app",
+
+    projectId:
+    "my-disneyland-paris",
+
+    storageBucket:
+    "my-disneyland-paris.firebasestorage.app",
+
+    messagingSenderId:
+    "787833723893",
+
+    appId:
+    "1:787833723893:web:0cd3c3f0f01dd7e8c09ebc"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+
+// LISTES
+
+const attractions = [
+    "Space Mountain",
+    "It's a small world",
+    "Big Thunder Mountain"
+];
+
+const spectacles = [
+    "Together",
+    "A Million Splashes Of Color",
+    "Mickey et le Magicien",
+    "Le Roi Lion et les Rythmes de la Terre"
+];
+
+const personnages = [
+    "Mickey",
+    "Anna et Elsa",
+    "Woody",
+    "Jessie",
+    "Spider-Man",
+    "Stitch",
+    "Minnie",
+    "Donald",
+    "Dingo",
+    "Pluto",
+    "Raiponce",
+    "Belle"
+];
+
+const allItems = [
+
+    ...attractions.map(name => ({
+        name,
+        category: "attractions"
+    })),
+
+    ...spectacles.map(name => ({
+        name,
+        category: "spectacles"
+    })),
+
+    ...personnages.map(name => ({
+        name,
+        category: "personnages"
+    }))
+];
+
+
+// VARIABLES
+
+const search =
+document.getElementById("search");
+
+const suggestions =
+document.getElementById("suggestions");
+
+const dateBox =
+document.querySelector(".date-box");
+
+const savedListsSelect =
+document.getElementById("saved-lists-select");
+
+const newListBtn =
+document.getElementById("new-list-btn");
+
+const saveListBtn =
+document.getElementById("save-list-btn");
+
+const deleteListBtn =
+document.getElementById("delete-list-btn");
+
+let checklistItems = {};
+
+let currentChecklistId = null;
+
+let currentChecklistName =
+"Checklist Séjour";
+
+
+// TITRE
+
+function updateTitle() {
+
+    document.querySelector(".checklist h2")
+    .textContent = currentChecklistName;
+}
+
+
+// CHARGER LISTES
+
+function loadSavedLists() {
+
+    onValue(ref(db, "saved_checklists"),
+    (snapshot) => {
+
+        const data = snapshot.val() || {};
+
+        savedListsSelect.innerHTML =
+        '<option value="">Sélectionner une checklist</option>';
+
+        Object.entries(data).forEach(([id, list]) => {
+
+            const option =
+            document.createElement("option");
+
+            option.value = id;
+
+            option.textContent =
+            list.name;
+
+            savedListsSelect.appendChild(option);
+        });
+    });
+}
+
+
+// CHARGER UNE CHECKLIST
+
+function loadChecklist(id) {
+
+    onValue(ref(db,
+    "saved_checklists/" + id),
+
+    (snapshot) => {
+
+        const data = snapshot.val();
+
+        if (!data) return;
+
+        currentChecklistId = id;
+
+        currentChecklistName =
+        data.name;
+
+        checklistItems =
+        data.items || {};
+
+        dateBox.textContent =
+        data.date || "DU ... au ... 2026";
+
+        updateTitle();
+
+        renderChecklist();
+    });
+}
+
+
+// SAUVEGARDE
+
+function saveChecklist() {
+
+    if (!currentChecklistId) return;
+
+    const data = {
+
+        name: currentChecklistName,
+
+        date: dateBox.textContent,
+
+        items: checklistItems
+    };
+
+    set(
+        ref(db,
+        "saved_checklists/" + currentChecklistId),
+
+        data
+    );
+}
+
+
+// AJOUT ITEM
+
+function addItem(value) {
+
+    const found =
+    allItems.find(item =>
+        item.name.toLowerCase()
+        === value.toLowerCase()
+    );
+
+    const itemId =
+    value.toLowerCase()
+    .replace(/\s+/g, "_");
+
+    checklistItems[itemId] = {
+
+        name:
+        found ? found.name : value,
+
+        category:
+        found ? found.category : "autres",
+
+        checked: false
+    };
+
+    saveChecklist();
+
+    renderChecklist();
+}
+
+
+// RENDER
+
+function renderChecklist() {
+
+    ["attractions",
+    "spectacles",
+    "personnages",
+    "autres"]
+
+    .forEach(category => {
+
+        const container =
+        document.getElementById(category)
+        .querySelector("div");
+
+        container.innerHTML = "";
+
+        Object.entries(checklistItems)
+
+        .forEach(([id, item]) => {
+
+            if (item.category !== category)
+            return;
+
+            const div =
+            document.createElement("div");
+
+            div.className = "item";
+
+            div.innerHTML = `
+
+                <div class="item-left">
+
+                    <input type="checkbox"
+                    ${item.checked ? "checked" : ""}>
+
+                    <span>${item.name}</span>
+
+                </div>
+
+                <span class="delete">X</span>
+            `;
+
+            const checkbox =
+            div.querySelector("input");
+
+            checkbox.addEventListener("change",
+            () => {
+
+                checklistItems[id].checked =
+                checkbox.checked;
+
+                saveChecklist();
+            });
+
+            div.querySelector(".delete")
+            .addEventListener("click",
+            () => {
+
+                delete checklistItems[id];
+
+                saveChecklist();
+
+                renderChecklist();
+            });
+
+            container.appendChild(div);
+        });
+    });
+}
+
+
+// RECHERCHE
+
+search.addEventListener("input", () => {
+
+    const value =
+    search.value.toLowerCase();
+
+    suggestions.innerHTML = "";
+
+    if (!value) {
+
+        suggestions.style.display =
+        "none";
+
+        return;
+    }
+
+    const filtered =
+    allItems.filter(item =>
+        item.name.toLowerCase()
+        .includes(value)
+    );
+
+    filtered.forEach(item => {
+
+        const div =
+        document.createElement("div");
+
+        div.className =
+        "suggestion-item";
+
+        div.textContent =
+        item.name;
+
+        div.addEventListener("click",
+        () => {
+
+            addItem(item.name);
+
+            search.value = "";
+
+            suggestions.style.display =
+            "none";
+        });
+
+        suggestions.appendChild(div);
+    });
+
+    suggestions.style.display =
+    filtered.length ? "block" : "none";
+});
+
+
+// ENTER
+
+search.addEventListener("keydown",
+(e) => {
+
+    if (e.key === "Enter") {
+
+        const value =
+        search.value.trim();
+
+        if (!value) return;
+
+        addItem(value);
+
+        search.value = "";
+
+        suggestions.style.display =
+        "none";
+    }
+});
+
+
+// DATE
+
+dateBox.addEventListener("blur",
+() => {
+
+    saveChecklist();
+});
+
+
+// NOUVELLE LISTE
+
+newListBtn.addEventListener("click",
+() => {
+
+    const name =
+    prompt("Nom de la checklist ?");
+
+    if (!name) return;
+
+    const newRef =
+    push(ref(db,
+    "saved_checklists"));
+
+    currentChecklistId =
+    newRef.key;
+
+    currentChecklistName =
+    name;
+
+    checklistItems = {};
+
+    dateBox.textContent =
+    "Du ... au ... 2026";
+
+    updateTitle();
+
+    saveChecklist();
+
+    renderChecklist();
+
+    savedListsSelect.value =
+    currentChecklistId;
+});
+
+
+// SAUVEGARDE MANUELLE
+
+saveListBtn.addEventListener("click",
+() => {
+
+    saveChecklist();
+
+    alert("Checklist sauvegardée !");
+});
+
+
+// SUPPRESSION
+
+deleteListBtn.addEventListener("click",
+() => {
+
+    if (!currentChecklistId)
+    return;
+
+    if (!confirm(
+    "Supprimer cette checklist ?"))
+    return;
+
+    remove(
+        ref(db,
+        "saved_checklists/"
+        + currentChecklistId)
+    );
+
+    currentChecklistId = null;
+
+    currentChecklistName =
+    "Checklist Séjour";
+
+    checklistItems = {};
+
+    updateTitle();
+
+    renderChecklist();
+});
+
+
+// CHANGEMENT SELECT
+
+savedListsSelect.addEventListener("change",
+() => {
+
+    const id =
+    savedListsSelect.value;
+
+    if (!id) return;
+
+    loadChecklist(id);
+});
+
+
+// START
+
+loadSavedLists();
+
+updateTitle();
+
+</script>
+
+</body>
+</html>

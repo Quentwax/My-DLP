@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Compteur d'Attractions</title>
+
+<link rel="icon" href="../favicon.png">
+<link href="../style.css" rel="stylesheet" />
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  onValue
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+// CONFIG FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyBb-2GlOsnUDzDXZ8-mgd6XIr8ny4ZkJoo",
+  authDomain: "my-disneyland-paris.firebaseapp.com",
+  databaseURL: "https://my-disneyland-paris-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "my-disneyland-paris",
+  storageBucket: "my-disneyland-paris.firebasestorage.app",
+  messagingSenderId: "787833723893",
+  appId: "1:787833723893:web:0cd3c3f0f01dd7e8c09ebc"
+};
+
+
+// INITIALISATION
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+const auth = getAuth(app);
+
+const provider = new GoogleAuthProvider();
+
+
+// LOGIN GOOGLE
+window.login = function () {
+
+  signInWithPopup(auth, provider)
+
+    .then((result) => {
+
+      alert("Connecté : " + result.user.email);
+
+    })
+
+    .catch((error) => {
+
+      console.error(error);
+
+      alert(error.message);
+
+    });
+
+};
+
+
+// ÉTAT DE CONNEXION
+onAuthStateChanged(auth, (user) => {
+
+  const btn = document.getElementById("loginBtn");
+
+  if (user) {
+
+    console.log("Connecté :", user.email);
+
+    if(btn){
+      btn.textContent = "Connecté ✅";
+    }
+
+  } else {
+
+    console.log("Pas connecté");
+
+    if(btn){
+      btn.textContent = "Se connecter";
+    }
+
+  }
+
+});
+
+
+// AJOUTER +1
+window.addCount = async function(id) {
+
+  if (!auth.currentUser) {
+
+    alert("Connecte-toi avant de modifier");
+
+    return;
+
+  }
+
+  const countRef = ref(db, 'attractions/' + id);
+
+  const snapshot = await get(countRef);
+
+  let value = snapshot.val() || 0;
+
+  await set(countRef, value + 1);
+
+};
+
+
+// RETIRER -1
+window.removeCount = async function(id) {
+
+  if (!auth.currentUser) {
+
+    alert("Connecte-toi avant de modifier");
+
+    return;
+
+  }
+
+  const countRef = ref(db, 'attractions/' + id);
+
+  const snapshot = await get(countRef);
+
+  let value = snapshot.val() || 0;
+
+  if (value > 0) {
+
+    await set(countRef, value - 1);
+
+  }
+
+};
+
+
+// CHARGEMENT EN TEMPS RÉEL
+function loadCount(id) {
+
+  const countRef = ref(db, 'attractions/' + id);
+
+  onValue(countRef, (snapshot) => {
+
+    const element = document.getElementById("count-" + id);
+
+    if(element){
+
+      element.innerText = snapshot.val() || 0;
+
+    }
+
+  });
+
+}
+
+
+// LISTE DES ATTRACTIONS
+const attractions = [
+
+  "btm",
+  "space",
+  "indiana_jones",
+  "pirates",
+  "buzz",
+  "dumbo",
+  "small_world",
+  "star_tours",
+  "flight_force",
+  "web",
+  "crush_coaster",
+  "frozen",
+  "peter_pan",
+  "thunder_mesa",
+  "phantom_manor",
+  "mad_hatter_tea_cups",
+  "casey_jr",
+  "cabane_robinson",
+  "nautilus",
+  "carrousel_lancelot",
+  "autopia",
+  "railroad",
+  "pinocchio",
+  "orbitron",
+  "labyrinthe_alice",
+  "blanche_neige",
+  "passage_aladdin",
+  "contes_fees",
+  "tower_terror",
+  "ratatouille",
+  "cars_road_trip",
+  "cars_quatre_roues",
+  "tapis_volants",
+  "raiponce_spin",
+  "rc_racer",
+  "slinky_dog",
+  "toy_soldiers"
+
+];
+
+
+// CHARGEMENT
+window.addEventListener("load", () => {
+
+  attractions.forEach(attraction => {
+
+    loadCount(attraction);
+
+  });
+
+});
+
+</script>
+
+</head>
+
+<body>
+
+<header class="nav">
+
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+
+    <a href="sejour.html" class="dropbtn">Checklist</a>
+
+    <div class="dropdown">
+
+        <div class="dropbtn">🔍</div>
+
+        <div class="content">
+            <a href="Attractions.html">Attractions</a>
+            <a href="shows.html">Shows</a>
+            <a href="meetings.html">Meetings</a>
+        </div>
+
+    </div>
+
+</header>
+
+
+<button id="loginBtn" onclick="login()">
+    Se connecter
+</button>
+
+
+<script>
+
+document.querySelectorAll(".dropbtn").forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+        let content = btn.nextElementSibling;
+
+        document.querySelectorAll(".content").forEach(menu => {
+
+            if(menu !== content){
+
+                menu.classList.remove("open");
+
+            }
+
+        });
+
+        content.classList.toggle("open");
+
+    });
+
+});
+
+</script>
+
+
+<main class="attractions-container">
+
+
+    <div class="search-filter-bar">
+
+    <input type="text" id="searchAttraction" placeholder="🔍 Rechercher une attraction...">
+
+    <select id="filterCategory">
+        <option value="all">Toutes les catégories</option>
+        <option value="thrill">Sensations fortes</option>
+        <option value="family">Familial</option>
+        <option value="walk">Balade à pied</option>
+    </select>
+
+</div>
+
+    <h1>Parc Principal</h1>
+
+    <table class="attractions-table">
+
+        <thead>
+
+            <tr>
+                <th>Attraction</th>
+                <th>Compteur</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>Big Thunder Mountain</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('btm')">-1</button>
+                        <span class="counter-display" id="count-btm">0</span>
+                        <button class="counter-btn plus" onclick="addCount('btm')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Hyperspace Mountain</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('space')">-1</button>
+                        <span class="counter-display" id="count-space">0</span>
+                        <button class="counter-btn plus" onclick="addCount('space')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Indiana Jones</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('indiana_jones')">-1</button>
+                        <span class="counter-display" id="count-indiana_jones">0</span>
+                        <button class="counter-btn plus" onclick="addCount('indiana_jones')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Pirates of the Caribbean</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('pirates')">-1</button>
+                        <span class="counter-display" id="count-pirates">0</span>
+                        <button class="counter-btn plus" onclick="addCount('pirates')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Buzz Lightyear</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('buzz')">-1</button>
+                        <span class="counter-display" id="count-buzz">0</span>
+                        <button class="counter-btn plus" onclick="addCount('buzz')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Dumbo</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('dumbo')">-1</button>
+                        <span class="counter-display" id="count-dumbo">0</span>
+                        <button class="counter-btn plus" onclick="addCount('dumbo')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>It's a Small World</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('small_world')">-1</button>
+                        <span class="counter-display" id="count-small_world">0</span>
+                        <button class="counter-btn plus" onclick="addCount('small_world')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Star Tours</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('star_tours')">-1</button>
+                        <span class="counter-display" id="count-star_tours">0</span>
+                        <button class="counter-btn plus" onclick="addCount('star_tours')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Peter Pan's Flight</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('peter_pan')">-1</button>
+                        <span class="counter-display" id="count-peter_pan">0</span>
+                        <button class="counter-btn plus" onclick="addCount('peter_pan')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Thunder Mesa Riverboat</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('thunder_mesa')">-1</button>
+                        <span class="counter-display" id="count-thunder_mesa">0</span>
+                        <button class="counter-btn plus" onclick="addCount('thunder_mesa')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Phantom Manor</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('phantom_manor')">-1</button>
+                        <span class="counter-display" id="count-phantom_manor">0</span>
+                        <button class="counter-btn plus" onclick="addCount('phantom_manor')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Mad Hatter's Tea Cups</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('mad_hatter_tea_cups')">-1</button>
+                        <span class="counter-display" id="count-mad_hatter_tea_cups">0</span>
+                        <button class="counter-btn plus" onclick="addCount('mad_hatter_tea_cups')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Casey Jr.</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('casey_jr')">-1</button>
+                        <span class="counter-display" id="count-casey_jr">0</span>
+                        <button class="counter-btn plus" onclick="addCount('casey_jr')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>La Cabane des Robinson</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('cabane_robinson')">-1</button>
+                        <span class="counter-display" id="count-cabane_robinson">0</span>
+                        <button class="counter-btn plus" onclick="addCount('cabane_robinson')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Le Nautilus</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('nautilus')">-1</button>
+                        <span class="counter-display" id="count-nautilus">0</span>
+                        <button class="counter-btn plus" onclick="addCount('nautilus')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Le Carrousel de Lancelot</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('carrousel_lancelot')">-1</button>
+                        <span class="counter-display" id="count-carrousel_lancelot">0</span>
+                        <button class="counter-btn plus" onclick="addCount('carrousel_lancelot')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Autopia</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('autopia')">-1</button>
+                        <span class="counter-display" id="count-autopia">0</span>
+                        <button class="counter-btn plus" onclick="addCount('autopia')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Disneyland Railroad</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('railroad')">-1</button>
+                        <span class="counter-display" id="count-railroad">0</span>
+                        <button class="counter-btn plus" onclick="addCount('railroad')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Pinocchio</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('pinocchio')">-1</button>
+                        <span class="counter-display" id="count-pinocchio">0</span>
+                        <button class="counter-btn plus" onclick="addCount('pinocchio')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Orbitron</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('orbitron')">-1</button>
+                        <span class="counter-display" id="count-orbitron">0</span>
+                        <button class="counter-btn plus" onclick="addCount('orbitron')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Le Labyrinthe d'Alice</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('labyrinthe_alice')">-1</button>
+                        <span class="counter-display" id="count-labyrinthe_alice">0</span>
+                        <button class="counter-btn plus" onclick="addCount('labyrinthe_alice')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Blanche-Neige</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('blanche_neige')">-1</button>
+                        <span class="counter-display" id="count-blanche_neige">0</span>
+                        <button class="counter-btn plus" onclick="addCount('blanche_neige')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Le Passage Enchanté d'Aladdin</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('passage_aladdin')">-1</button>
+                        <span class="counter-display" id="count-passage_aladdin">0</span>
+                        <button class="counter-btn plus" onclick="addCount('passage_aladdin')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Le Pays des Contes de Fées</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('contes_fees')">-1</button>
+                        <span class="counter-display" id="count-contes_fees">0</span>
+                        <button class="counter-btn plus" onclick="addCount('contes_fees')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <h1 style="margin-top: 30px;">Adventure World</h1>
+
+
+    <table class="attractions-table">
+
+        <thead>
+
+            <tr>
+                <th>Attraction</th>
+                <th>Compteur</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>Flight Force</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('flight_force')">-1</button>
+                        <span class="counter-display" id="count-flight_force">0</span>
+                        <button class="counter-btn plus" onclick="addCount('flight_force')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>WEB Adventure</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('web')">-1</button>
+                        <span class="counter-display" id="count-web">0</span>
+                        <button class="counter-btn plus" onclick="addCount('web')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Crush Coaster</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('crush_coaster')">-1</button>
+                        <span class="counter-display" id="count-crush_coaster">0</span>
+                        <button class="counter-btn plus" onclick="addCount('crush_coaster')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Frozen Ever After</td>
+                <td>
+                    <div class="counter-controls">
+                        <button class="counter-btn minus" onclick="removeCount('frozen')">-1</button>
+                        <span class="counter-display" id="count-frozen">0</span>
+                        <button class="counter-btn plus" onclick="addCount('frozen')">+1</button>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+    <td>Tower Of Terror</td>
+    <td>
+        <div class="counter-controls">
+            <button class="counter-btn minus" onclick="removeCount('tower_terror')">-1</button>
+            <span class="counter-display" id="count-tower_terror">0</span>
+            <button class="counter-btn plus" onclick="addCount('tower_terror')">+1</button>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>Ratatouille</td>
+    <td>
+        <div class="counter-controls">
+            <button class="counter-btn minus" onclick="removeCount('ratatouille')">-1</button>
+            <span class="counter-display" id="count-ratatouille">0</span>
+            <button class="counter-btn plus" onclick="addCount('ratatouille')">+1</button>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>Cars Road Trip</td>
+    <td>
+        <div class="counter-controls">
+            <button class="counter-btn minus" onclick="removeCount('cars_road_trip')">-1</button>
+            <span class="counter-display" id="count-cars_road_trip">0</span>
+            <button class="counter-btn plus" onclick="addCount('cars_road_trip')">+1</button>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>Cars Quatre Roues Rallye</td>
+    <td>
+        <div class="counter-controls">
+            <button class="counter-btn minus" onclick="removeCount('cars_quatre_roues')">-1</button>
+            <span class="counter-display" id="count-cars_quatre_roues">0</span>
+            <button class="counter-btn plus" onclick="addCount('cars_quatre_roues')">+1</button>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>Les Tapis Volants</td>
+    <td>
+        <div class="counter-controls">
+            <button class="counter-btn minus" onclick="removeCount('tapis_volants')">-1</button>
+            <span class="counter-display" id="count-tapis_volants">0</span>
+            <button class="counter-btn plus" onclick="addCount('tapis_volants')">+1</button>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>Raiponce Tangled Spin</td>
+    <td>
+        <div class="counter-controls">
+            <button class="counter-btn minus" onclick="removeCount('raiponce_spin')">-1</button>
+            <span class="counter-display" id="count-raiponce_spin">0</span>
+            <button class="counter-btn plus" onclick="addCount('raiponce_spin')">+1</button>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>RC Racer</td>
+    <td>
+        <div class="counter-controls">
+            <button class="counter-btn minus" onclick="removeCount('rc_racer')">-1</button>
+            <span class="counter-display" id="count-rc_racer">0</span>
+            <button class="counter-btn plus" onclick="addCount('rc_racer')">+1</button>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>Slinky Dog Zigzag Spin</td>
+    <td>
+        <div class="counter-controls">
+            <button class="counter-btn minus" onclick="removeCount('slinky_dog')">-1</button>
+            <span class="counter-display" id="count-slinky_dog">0</span>
+            <button class="counter-btn plus" onclick="addCount('slinky_dog')">+1</button>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>Toy Soldiers Parachute Drop</td>
+    <td>
+        <div class="counter-controls">
+            <button class="counter-btn minus" onclick="removeCount('toy_soldiers')">-1</button>
+            <span class="counter-display" id="count-toy_soldiers">0</span>
+            <button class="counter-btn plus" onclick="addCount('toy_soldiers')">+1</button>
+        </div>
+    </td>
+</tr>
+
+        </tbody>
+
+    </table>
+
+</main>
+
+
+
+</body>
+</html>

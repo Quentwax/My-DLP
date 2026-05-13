@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Collection Pièces </title>
+<link rel="icon" href="../favicon.png">
+<link href="../style.css" rel="stylesheet" />
+</head>
+
+<body>
+
+<header class="nav">
+
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+
+    <a href="pin's.html" class="dropbtn">Pin's du Mois</a>
+    <a href="collection.html" class="dropbtn">Collection Pin's</a>
+    <a href="last_months.html" class="dropbtn">Anciens Pin's</a>
+</header>
+
+<h1 class="titre">Collection de Pièces
+</h1>
+
+
+
+<script>
+document.querySelectorAll(".dropbtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+
+        let content = btn.nextElementSibling;
+
+        // Ferme les autres menus
+        document.querySelectorAll(".content").forEach(menu => {
+            if(menu !== content) menu.classList.remove("open");
+        });
+
+        content.classList.toggle("open");
+    });
+});
+</script>
+<div class="boxcontainer">
+<div class="pin-box">
+    <img class="pin-collection" src="../piece/2009.png" alt="2009">
+    <img class="pin-collection" src="../piece/2010.png" alt="2010">
+    <img class="pin-collection" src="../piece/2024.png" alt="2024">
+    <img class="pin-collection" src="../piece/2025.png" alt="2025">
+    <img class="pin-collection" src="../piece/buzz_discovery_land.png" alt="2010">
+    <img class="pin-collection" src="../piece/carousel_lancelot_minnie.png" alt="">
+        <img class="pin-collection" src="../piece/20_ans.png" alt="2009">
+    <img class="pin-collection" src="../piece/cars_2.png" alt="2010">
+    <img class="pin-collection" src="../piece/disneyland_hotel.png" alt="2024">
+    <img class="pin-collection" src="../piece/it's_a_small_world.png" alt="2025">
+    <img class="pin-collection" src="../piece/joyeux_halloween.png" alt="2010">
+    <img class="pin-collection" src="../piece/joyeux_noel.png" alt="Noël">
+        <img class="pin-collection" src="../piece/marie.png" alt="2009">
+    <img class="pin-collection" src="../piece/mickey_deux_chateaux.png" alt="2010">
+    <img class="pin-collection" src="../piece/mickey_fantasia_chateaux.png" alt="2024">
+    <img class="pin-collection" src="../piece/mickey_paris.png" alt="2025">
+    <img class="pin-collection" src="../piece/minnie_chateau.png" alt="2010">
+    <img class="pin-collection" src="../piece/newport_bay_club.png" alt="Newport">
+        <img class="pin-collection" src="../piece/phantom_manor.png" alt="2009">
+    <img class="pin-collection" src="../piece/pirates.png" alt="2010">
+    <img class="pin-collection" src="../piece/raiponce.png" alt="2024">
+    <img class="pin-collection" src="../piece/simba.png" alt="2025">
+    <img class="pin-collection" src="../piece/spider-man.png" alt="2010">
+    <img class="pin-collection" src="../piece/star_tours.png" alt="">
+        <img class="pin-collection" src="../piece/star_tours_l'aventure_continue.png" alt="2009">
+    <img class="pin-collection" src="../piece/stitch.png" alt="2010">
+    <img class="pin-collection" src="../piece/tot.png" alt="2024">
+    <img class="pin-collection" src="../piece/toy_story.png" alt="2025">
+    <img class="pin-collection" src="../piece/world_of_frozen.png" alt="2010">
+    <img class="pin-collection" src="../piece/cars2026.png" alt="Cars">
+
+</div>
+ </div>
+
+<audio id="music" src="../Kingdom Dance (From TangledScore).mp3" loop></audio>
+<script>
+const music = document.getElementById("music");
+
+window.addEventListener("load", () => {
+    // RESTAURER LE TEMPS
+    let time = parseFloat(localStorage.getItem("musicTime"));
+    if (!isNaN(time)) {
+        music.currentTime = time;
+    }
+
+    // RESTAURER LE VOLUME
+    let savedVolume = parseFloat(localStorage.getItem("musicVolume"));
+    if (!isNaN(savedVolume)) {
+        music.volume = savedVolume;
+        volumeSlider.value = savedVolume;
+    } else {
+        music.volume = 0.5;
+        volumeSlider.value = 0.5;
+    }
+
+    // RESTAURER L'ÉTAT DE LECTURE
+    let wasPlaying = localStorage.getItem("musicPlaying") === "true";
+    if (wasPlaying) {
+        let promise = music.play();
+        if (promise !== undefined) {
+            promise.catch(() => {
+                // Navigation inter-pages peut empêcher autoplay sans interaction utilisateur
+                console.log("Lecture automatique bloquée, appuyez sur Play.");
+            });
+        }
+    } else {
+        music.pause();
+    }
+
+    playPauseBtn.textContent = music.paused ? "▶️" : "⏸️";
+}); 
+
+/* SAUVEGARDER EN CONTINU */
+setInterval(() => {
+    localStorage.setItem("musicTime", music.currentTime);
+}, 500);
+</script>
+<script>
+window.addEventListener("beforeunload", () => {
+    localStorage.setItem("musicTime", music.currentTime);
+});
+</script>
+
+<!-- Menu de contrôle de la musique -->
+<div id="music-floating-btn">🎵</div>
+<div id="music-controls" class="hidden">
+    <button id="play-pause-btn">⏸️</button>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+</div>
+
+<script>
+const playPauseBtn = document.getElementById("play-pause-btn");
+const volumeSlider = document.getElementById("volume-slider");
+const floatingBtn = document.getElementById("music-floating-btn");
+const controls = document.getElementById("music-controls");
+
+// Initialiser le volume au chargement (sera écrasé par la restauration ci-dessus)
+music.volume = 0.5;
+
+// Toggle contrôle
+floatingBtn.addEventListener("click", () => {
+    controls.classList.toggle("hidden");
+});
+
+// Lecture/pause
+playPauseBtn.addEventListener("click", () => {
+    if (music.paused) {
+        music.play();
+        playPauseBtn.textContent = "⏸️";
+        localStorage.setItem("musicPlaying", "true");
+    } else {
+        music.pause();
+        playPauseBtn.textContent = "▶️";
+        localStorage.setItem("musicPlaying", "false");
+    }
+});
+
+// Slider volume
+volumeSlider.addEventListener("input", () => {
+    music.volume = parseFloat(volumeSlider.value);
+    localStorage.setItem("musicVolume", music.volume.toString());
+});
+
+// Mettre à jour l'icône quand la musique se termine
+music.addEventListener("ended", () => {
+    playPauseBtn.textContent = "▶️";
+    localStorage.setItem("musicPlaying", "false");
+});
+
+// Sauvegarder le statut lors de changement immédiat
+music.addEventListener("pause", () => {
+    localStorage.setItem("musicPlaying", "false");
+});
+
+music.addEventListener("play", () => {
+    localStorage.setItem("musicPlaying", "true");
+});
+</script>
+
+</body>
+
+</html>
+

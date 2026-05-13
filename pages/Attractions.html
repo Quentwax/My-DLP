@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Recherche</title>
+<link rel="icon" href="../favicon.png">
+<link href="../style.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+<header class="nav">
+
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+
+    <div class="dropdown">
+        <div class="dropbtn">Les Parcs</div>
+        <div class="content">
+            <a href="pages/park.html">Parc Principal</a>
+            <a href="pages/adventureworld.html">Adventure World</a>
+        </div>
+    </div>
+
+    <a href="numb_coaster.html" class="dropbtn">Séjours</a>
+
+    <a href="Attractions.html" class="dropbtn">🔍</a>
+
+
+</header>
+
+<script>
+document.querySelectorAll(".dropbtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+
+        let content = btn.nextElementSibling;
+
+        // Ferme les autres menus
+        document.querySelectorAll(".content").forEach(menu => {
+            if(menu !== content) menu.classList.remove("open");
+        });
+
+        content.classList.toggle("open");
+    });
+});
+</script>
+
+<div class="filters">
+    <button id="btn-attractions" class="filter-btn active">Attractions</button>
+    <button id="btn-spectacles" class="filter-btn">Spectacles</button>
+    <button id="btn-personnages" class="filter-btn">Personnages</button>
+</div>
+
+<h1 class="titre">Disneland Park</h1>
+                                                            <!-- Map Intéractive -->
+
+<div class="map">
+  <img src="../map_dlp.png" >
+
+  <!-- Attractions -->
+  <a href="btm.html" class="point attraction" style="top: 60%; left: 25%;">
+    <span class="tooltip">Big Thunder Mountain</span>
+  </a>
+
+  <a href="pirates.html" class="point attraction" style="top: 8%; left: 38%;">
+    <span class="tooltip">Pirates of the Caribbean</span>
+  </a>
+
+  <a href="hyperspace.html" class="point attraction" style="bottom: 50%; right: 19%;">
+    <span class="tooltip">Star Wars Hyperspace Mountain</span>
+  </a>
+
+  <a href="star_tours.html" class="point attraction" style="bottom: 58%; right: 18.5%;">
+    <span class="tooltip">Star Tours</span>
+  </a>
+
+  <a href="buzz.html" class="point attraction" style="bottom: 58%; right: 34.2%;">
+    <span class="tooltip">Buzz Lightyear Laser Blast</span>
+  </a>
+
+  <a href="orbitron.html" class="point attraction" style="bottom: 52%; right: 29.2%;">
+    <span class="tooltip">Orbitron</span>
+  </a>
+
+  <a href="autopia.html" class="point attraction" style="bottom: 30%; right: 30.3%;">
+    <span class="tooltip">Autopia</span>
+  </a>
+
+  <a href="phantom_manor.html" class="point attraction" style="bottom: 26.5%; left: 32.7%;">
+    <span class="tooltip">Phantom Manor</span>
+  </a>
+
+  <a href="its_a_small_world.html" class="point attraction" style="top: 18%; right: 29%;">
+    <span class="tooltip">It's a Small World</span>
+  </a>
+
+  <a href="indiana_jones.html" class="point attraction" style="top: 20%; left: 17%;">
+    <span class="tooltip">Indiana Jones</span>
+  </a>
+
+  <a href="dumbo.html" class="point attraction" style="top: 12.6%; left: 47.5%;">
+    <span class="tooltip">Dumbo</span>
+  </a>
+
+  <a href="peter_pan.html" class="point attraction" style="top: 11%; left: 43%;">
+    <span class="tooltip">Peter Pan</span>
+  </a>
+
+  <a href="mad_hatter.html" class="point attraction" style="top: 13%; right: 40.5%;">
+    <span class="tooltip">Mad Hatter's Tea Cups</span>
+  </a>
+
+  <a href="casey_jr.html" class="point attraction" style="top: 4%; right: 36.5%;">
+    <span class="tooltip">Casey Jr.</span>
+  </a>
+
+  <a href="fairytales.html" class="point attraction" style="top: 5%; right: 34.7%;">
+    <span class="tooltip">Le pays des contes de fées</span>
+  </a>
+
+  <a href="pinocchio.html" class="point attraction" style="top: 21.5%; right: 54%;">
+    <span class="tooltip">Pinocchio</span>
+  </a>
+
+  <a href="blanche-neige.html" class="point attraction" style="top: 26%; right: 52%;">
+    <span class="tooltip">Blanche Neige</span>
+  </a>
+
+
+                                                 <!-- Spectacles -->
+
+  <div class="point spectacle" data-img="../images/show1.jpg" data-title="Disney Stars on Parade" data-horaires="Tous les jours à 14h et 18h" style="top: 50%; left: 50%;">
+    <span class="tooltip">Disney Stars on Parade</span>
+  </div>
+
+  <div class="point spectacle" data-img="../images/show2.jpg" data-title="Disney Illuminations" data-horaires="Tous les soirs à 21h" style="top: 30%; left: 60%;">
+    <span class="tooltip">Disney Illuminations</span>
+  </div>
+
+  <!-- Personnages -->
+  <div class="point personnage" data-img="../images/char1.jpg" data-title="Mickey Mouse" data-horaires="10h-12h et 14h-16h" style="top: 40%; left: 45%;">
+    <span class="tooltip">Mickey Mouse</span>
+  </div>
+
+  <div class="point personnage" data-img="../images/char2.jpg" data-title="Minnie Mouse" data-horaires="11h-13h et 15h-17h" style="top: 35%; left: 55%;">
+    <span class="tooltip">Minnie Mouse</span>
+  </div>
+
+  <div class="point personnage" data-img="../images/char3.jpg" data-title="Donald Duck" data-horaires="9h-11h et 13h-15h" style="top: 45%; left: 40%;">
+    <span class="tooltip">Donald Duck</span>
+  </div>
+  
+</div>
+
+
+
+<br>
+<h1 class="titre">Adventure World</h1>
+
+                                                            <!-- Adventure World Map -->
+<div class="map">
+  <img src="../adventure_world.jpg" >
+
+  <!-- Attractions -->
+  <a href="tower_of_terror.html" class="point attraction" style="top: 55%; left: 43.5%;">
+    <span class="tooltip">Tower Of Terror</span>
+  </a>
+
+  <a href="flight_force.html" class="point attraction" style="top: 51.5%; left: 20%;">
+    <span class="tooltip">Flight Force</span>
+  </a>
+
+  <a href="crush_coaster.html" class="point attraction" style="bottom: 37%; right: 21%;">
+    <span class="tooltip">Crush Coaster</span>
+  </a>
+
+  <a href="cars_road_trip.html" class="point attraction" style="bottom: 58%; right: 27%;">
+    <span class="tooltip">Cars Road Trip</span>
+  </a>
+
+  <a href="frozen_ever_after.html" class="point attraction" style="top: 29%; left: 51.5%;">
+    <span class="tooltip">Frozen Ever After</span>
+  </a>
+
+  <!-- Spectacles -->
+  <div class="point spectacle" data-img="../shows/together.jpg" data-title="Together" data-horaires="Tous les jours à 16h" style="bottom: 30%; left: 43%;">
+    <span class="tooltip">Together</span>
+  </div>
+
+  <!-- Personnages -->
+  <div class="point personnage" data-img="../images/char4.jpg" data-title="Daisy Duck" data-horaires="10h-12h et 14h-16h" style="top: 50%; left: 60%;">
+    <span class="tooltip">Daisy Duck</span>
+  </div>
+
+  <div class="point personnage" data-img="../images/char5.jpg" data-title="Goofy" data-horaires="11h-13h et 15h-17h" style="top: 55%; left: 30%;">
+    <span class="tooltip">Goofy</span>
+  </div>
+
+  <div class="point personnage" data-img="../images/char6.jpg" data-title="Pluto" data-horaires="9h-11h et 13h-15h" style="top: 40%; left: 70%;">
+    <span class="tooltip">Pluto</span>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('btn-attractions').addEventListener('click', () => showSection('attractions'));
+document.getElementById('btn-spectacles').addEventListener('click', () => showSection('spectacles'));
+document.getElementById('btn-personnages').addEventListener('click', () => showSection('personnages'));
+
+function showSection(section) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-' + section).classList.add('active');
+
+    // Hide all points
+    document.querySelectorAll('.point').forEach(p => p.style.display = 'none');
+
+    // Show points for the section
+    let className = section === 'attractions' ? 'attraction' : section === 'spectacles' ? 'spectacle' : 'personnage';
+    document.querySelectorAll('.point.' + className).forEach(p => p.style.display = 'block');
+}
+
+// Initialize with attractions
+showSection('attractions');
+</script>
+
+<!-- Modal pour aperçus -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <img id="modal-img" src="" alt="">
+        <h2 id="modal-title"></h2>
+        <p id="modal-horaires"></p>
+    </div>
+</div>
+
+<script>
+// Modal functions
+function openModal(img, title, horaires) {
+    document.getElementById('modal-img').src = img;
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-horaires').textContent = 'Horaires: ' + horaires;
+    document.getElementById('modal').style.display = 'block';
+}
+
+document.querySelector('.close').addEventListener('click', () => {
+    document.getElementById('modal').style.display = 'none';
+});
+
+window.addEventListener('click', (event) => {
+    if (event.target == document.getElementById('modal')) {
+        document.getElementById('modal').style.display = 'none';
+    }
+});
+
+// Add click for modal on div points
+document.querySelectorAll('.point').forEach(point => {
+    if (point.tagName !== 'A') {
+        point.addEventListener('click', function() {
+            const img = this.getAttribute('data-img');
+            const title = this.getAttribute('data-title');
+            const horaires = this.getAttribute('data-horaires');
+            openModal(img, title, horaires);
+        });
+    }
+});
+</script>
+
+<audio id="music"></audio>
+<script>
+const music = document.getElementById("music");
+
+// Playlist des chansons
+const playlist = [
+    "Kingdom Dance (From TangledScore).mp3",
+    "Tales of Magic.mp3"
+];
+let currentSongIndex = 0;
+
+// Charger la chanson actuelle
+function loadSong(index) {
+    music.src = playlist[index];
+    music.load();
+}
+
+// Initialiser avec la première chanson
+loadSong(currentSongIndex);
+
+window.addEventListener("load", () => {
+    // RESTAURER LE TEMPS
+    let time = parseFloat(localStorage.getItem("musicTime"));
+    if (!isNaN(time)) {
+        music.currentTime = time;
+    }
+
+    // RESTAURER LE VOLUME
+    let savedVolume = parseFloat(localStorage.getItem("musicVolume"));
+    if (!isNaN(savedVolume)) {
+        music.volume = savedVolume;
+        volumeSlider.value = savedVolume;
+    } else {
+        music.volume = 0.5;
+        volumeSlider.value = 0.5;
+    }
+
+    // RESTAURER L'ÉTAT DE LECTURE
+    let wasPlaying = localStorage.getItem("musicPlaying") === "true";
+    if (wasPlaying) {
+        let promise = music.play();
+        if (promise !== undefined) {
+            promise.catch(() => {
+                // Navigation inter-pages peut empêcher autoplay sans interaction utilisateur
+                console.log("Lecture automatique bloquée, appuyez sur Play.");
+            });
+        }
+    } else {
+        music.pause();
+    }
+
+    playPauseBtn.textContent = music.paused ? "▶️" : "⏸️";
+});
+
+/* SAUVEGARDER EN CONTINU */
+setInterval(() => {
+    localStorage.setItem("musicTime", music.currentTime);
+}, 500);
+</script>
+<script>
+window.addEventListener("beforeunload", () => {
+    localStorage.setItem("musicTime", music.currentTime);
+});
+</script>
+
+
+<div id="music-floating-btn">🎵</div>
+<div id="music-controls" class="hidden">
+    <button id="play-pause-btn">⏸️</button>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+</div>
+
+<script>
+const playPauseBtn = document.getElementById("play-pause-btn");
+const volumeSlider = document.getElementById("volume-slider");
+const floatingBtn = document.getElementById("music-floating-btn");
+const controls = document.getElementById("music-controls");
+
+// Initialiser le volume au chargement (sera écrasé par la restauration ci-dessus)
+music.volume = 0.5;
+
+// Toggle contrôle
+floatingBtn.addEventListener("click", () => {
+    controls.classList.toggle("hidden");
+});
+
+// Lecture/pause
+playPauseBtn.addEventListener("click", () => {
+    if (music.paused) {
+        music.play();
+        playPauseBtn.textContent = "⏸️";
+        localStorage.setItem("musicPlaying", "true");
+    } else {
+        music.pause();
+        playPauseBtn.textContent = "▶️";
+        localStorage.setItem("musicPlaying", "false");
+    }
+});
+
+// Slider volume
+volumeSlider.addEventListener("input", () => {
+    music.volume = parseFloat(volumeSlider.value);
+    localStorage.setItem("musicVolume", music.volume.toString());
+});
+
+// Mettre à jour l'icône quand la musique se termine
+music.addEventListener("ended", () => {
+    playPauseBtn.textContent = "▶️";
+    localStorage.setItem("musicPlaying", "false");
+});
+
+// Sauvegarder le statut lors de changement immédiat
+music.addEventListener("pause", () => {
+    localStorage.setItem("musicPlaying", "false");
+});
+
+music.addEventListener("play", () => {
+    localStorage.setItem("musicPlaying", "true");
+});
+</script>
+                                                <!-- FIN Menu de contrôle de la musique -->
+
+                                                <!-- Point attraction interaction (mobile) -->
+<script>
+const isTouch = 'ontouchstart' in window;
+
+document.querySelectorAll('.point').forEach(point => {
+    let clickCount = 0;
+    point.addEventListener('click', function(e) {
+        if (!isTouch) return;
+        e.preventDefault();
+        if (this.tagName === 'A') {
+            clickCount++;
+            if (clickCount === 2) {
+                window.location.href = this.href;
+                clickCount = 0;
+            }
+        } else {
+            // For divs, open modal
+            const img = this.getAttribute('data-img');
+            const title = this.getAttribute('data-title');
+            const horaires = this.getAttribute('data-horaires');
+            openModal(img, title, horaires);
+        }
+    });
+});
+</script>
+
+
+
+</body>
+
+
+
+</html>

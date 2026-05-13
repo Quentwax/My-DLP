@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Pin's du Mois</title>
+<link rel="icon" href="../favicon.png">
+<link href="../style.css" rel="stylesheet" />
+</head>
+
+<body>
+
+<header class="nav">
+
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+
+    <a href="pin's.html" class="dropbtn">Pin's du Mois</a>
+    <a href="collection.html" class="dropbtn">Collection Pin's</a>
+    <a href="last_months.html" class="dropbtn">Anciens Pin's</a>
+</header>
+
+<h1 class="titre">Collection de Pin's</h1>
+
+<button id="filter-toggle" class="filter-toggle">Filtres</button>
+<div id="filter-panel" class="filter-panel">
+    <div class="filter-panel-header">
+        <span>Filtres</span>
+        <button id="filter-close" class="filter-close" aria-label="Fermer">✕</button>
+    </div>
+    <label><input type="checkbox" id="filter-me"> Moi</label>
+    <label><input type="checkbox" id="filter-mom"> Maman</label>
+    <p id="filter-info">Cochez pour filtrer vos pin's.</p>
+</div>
+
+<script>
+document.querySelectorAll(".dropbtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+
+        let content = btn.nextElementSibling;
+
+        // Ferme les autres menus
+        document.querySelectorAll(".content").forEach(menu => {
+            if(menu !== content) menu.classList.remove("open");
+        });
+
+        content.classList.toggle("open");
+    });
+});
+</script>
+<div class="boxcontainer">
+<div class="pin-box">
+    <img class="pin-collection" data-me="true" data-mom="false" src="../pin's/Rémy_coaster.png" alt="Pins Ratatouille L'Aventure totalement toquée de Rémy">
+    <img class="pin-collection" data-me="true" data-mom="false" src="../pin's/Stitch_Yzma.png" alt="Pins Stitch Yzma">
+    <img class="pin-collection" data-me="true" data-mom="false" src="../pin's/pièce2026.png" alt="Pins Pièce 2026">
+    <img class="pin-collection" data-me="true" data-mom="false" src="../pin's/zootopie2.png" alt="Pins Zootopie 2">
+    <img class="pin-collection" data-me="true" data-mom="false" src="../pin's/tarzan.png" alt="Pins Tarzan">
+    <img class="pin-collection" data-me="true" data-mom="true" src="../pin's/Kronk&yzma.png" alt="Pins Kronk & Yzma">
+    <img class="pin-collection" data-me="true" data-mom="true" src="../pin's/belle_et_la_bête.png" alt="Pins La Belle et la Bête">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/captain_marvel.png" alt="Pins Captain Marvel">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/chicken_little.png" alt="Pins Chicken Little">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/chernabog.png" alt="Pins Chernabog">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/crochet&mouche.png" alt="Pins Crochet et Mouche">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/Cruella.png" alt="Pins Cruella">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/It's_a_small_world_holiday.png" alt="Pins It's a Small World Holiday">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/jafar&iago.png" alt="Pins Jafar et Iago">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/jafar.png" alt="Pins Jafar">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/logo avengers.png" alt="Pins Logo Avengers">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/luxo.png" alt="Pins Luxo">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/maléfique.png" alt="Pins Maléfique">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/max&roxanne.png" alt="Pins Max et Roxanne">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/mickey&minnie.png" alt="Pins Mickey et Minnie">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/mickey&pluto.png" alt="Pins Mickey et Pluto">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/mickey_classique.png" alt="Pins Mickey classique">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/mickey_horloge.png" alt="Pins Mickey horloge">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/mickey_livre_fantasia.png" alt="Pins Mickey livre Fantasia">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/Mulan.png" alt="Pins Mulan">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/pacha.png" alt="Pins Pacha">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/pascal.png" alt="Pins Pascal">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/peter_pan_flight.png" alt="Pins Peter Pan">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/remy&emile.png" alt="Pins Remy et Emile">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/remy.png" alt="Pins Remy">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/scar.png" alt="Pins Scar">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/Star_tours.png" alt="Pins Star Tours">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/steamboat_willie.png" alt="Pins Steamboat Willie">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/studios.png" alt="Pins Studios">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/tiana_resto.png" alt="Pins Tiana restaurant">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/tic&tac-tot.png" alt="Pins Tic et Tac Tot">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/tic&tac_paris.jpg" alt="Pins Tic et Tac Paris">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/ursulla.png" alt="Pins Ursula">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/amethyst.png" alt="Pins Améthyste">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/dolores.png" alt="Pins Dolores">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/elsa_ab.png" alt="Pins Elsa">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/emerald.png" alt="Pins Émeraude">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/pots.png" alt="Pins Protector of the skies ">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/isabela.png" alt="Pins Isabela">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/kida.webp" alt="Pins Kida">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/lorcana_logo.png" alt="Pins Lorcana Logo">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/marie.png" alt="Pins Marie">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/max&dingo.png" alt="Pins Max et Dingo">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/ms.marvel.png" alt="Pins Ms. Marvel">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/mushu&cricket.png" alt="Pins Mushu et Cricket">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/peter_vs_crochet.png" alt="Pins Peter Pan vs Crochet">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/ruby.png" alt="Pins Ruby">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/sapphire.png" alt="Pins Saphir">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/spider_gwen.png" alt="Pins Spider-Gwen">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/tiana_loungefly.jpg" alt="Pins Tiana Loungefly">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/2026_mickey.png" alt="Pins Mickey 2026">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/adventure_world.png" alt="Pins Adventure World">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/adventure_world_spinner.png" alt="Pins Adventure World Spinner">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/aristochats.png" alt="Pins Aristochats">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/cheshire_coeur.png" alt="Pins Cheshire Coeur">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/coeur_flynn.png" alt="Pins Coeur Flynn">
+    <img class="collection-pin" data-me="false" data-mom="false" src="../pin's/jiminy_cricket.png" alt="Pins Jiminy Cricket">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/mechante_reine&miroir.png" alt="Pins Méchante Reine et Miroir">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/mickey_disneyland_paris.png" alt="Pins Mickey Disneyland Paris">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/mowgli_sur_baloo.png" alt="Pins Mowgli sur Baloo">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/partners_gold.png" alt="Pins Partners Gold">
+    <img class="collection-pin" data-me="false" data-mom="false" src="../pin's/petit_jean.png" alt="Pins Petit Jean">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/raiponce_tangled_spin.png" alt="Pins Raiponce Tangled Spin">
+    <img class="collection-pin" data-me="false" data-mom="false" src="../pin's/sven&olaf.png" alt="Pins Sven et Olaf">
+    <img class="collection-pin" data-me="false" data-mom="false" src="../pin's/winnie_ballon.png" alt="Pins Winnie Ballon">
+    <img class="collection-pin" data-me="true" data-mom="false" src="../pin's/world_of_frozen.png" alt="Pins World of Frozen">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/aurore_cadre.png" alt="Pins Aurore Cadre">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/blanche_neige_cadre.png" alt="Pins Blanche Neige Cadre">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/cendrillon_cadre.png" alt="Pins Cendrillon Cadre">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/duchesse&o_malley.png" alt="Pins Duchesse et O'Malley">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/hercule.png" alt="Pins Hercule">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/jasmine_cadre.png" alt="Pins Jasmine Cadre">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/jiminy_cricket_bougie.png" alt="Pins Jiminy Cricket Bougie">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/lilo&stitch_pose.png" alt="Pins Lilo & Stitch Pose">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/maui.png" alt="Pins Maui">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/meg_amphore.png" alt="Pins Meg Amphore">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/mulan_cadre.png" alt="Pins Mulan Cadre">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/panpan.png" alt="Pins Panpan">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/pocahontas_cadre.png" alt="Pins Pocahontas Cadre">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/simba&timon&pumba.png" alt="Pins Simba, Timon et Pumba">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/simba_feuilles.png" alt="Pins Simba Feuilles">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/tiana.png" alt="Pins Tiana">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/tiana_cadre.png" alt="Pins Tiana Cadre">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/tic&tac_noisette.png" alt="Pins Tic et Tac Noisette">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/tic&tac_oreille.png" alt="Pins Tic et Tac Oreille">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/wendy&michel_bateau.png" alt="Pins Wendy et Michel Bateau">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/winnie_coeur.png" alt="Pins Winnie Coeur">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/belle_livres.png" alt="Pins Belle avec livres">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/bigben&lumiere.png" alt="Pins Big Ben et Lumière">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/bruno.png" alt="Pins Bruno">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/luisa.png" alt="Pins Luisa">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/pepa.png" alt="Pins Pepa">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/picsou.png" alt="Pins Picsou">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/alice&reine_de_coeur.png" alt="Pins Alice et" La Reine de Coeur">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/clochette_muguet.png" alt="Pins Clochette Muguet">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/mushu_muguet.png" alt="Pins Mushu muguet">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/panpan_muguet.png" alt="Pins Panpan Muguet">
+    <img class="collection-pin" data-me="true" data-mom="true" src="../pin's/tic&tac_muguet.png" alt="Pins Tic et Tac Muguet">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/donald.png" alt="Pins Donald">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/picsou&riri&fifi&loulou.png" alt="Pins Picsou et les neuveux">
+    <img class="collection-pin" data-me="false" data-mom="true" src="../pin's/rapetous.png" alt="Pins Rapetous">
+
+</div>
+ </div>
+
+<script>
+const filterPanel = document.getElementById('filter-panel');
+const filterToggle = document.getElementById('filter-toggle');
+const filterClose = document.getElementById('filter-close');
+const filterMe = document.getElementById('filter-me');
+const filterMom = document.getElementById('filter-mom');
+const filterInfo = document.getElementById('filter-info');
+const pinImages = document.querySelectorAll('.pin-box img');
+
+function filterPins() {
+    const meChecked = filterMe.checked;
+    const momChecked = filterMom.checked;
+
+    pinImages.forEach(img => {
+        const hasMe = img.dataset.me === 'true';
+        const hasMom = img.dataset.mom === 'true';
+        let visible;
+
+        if (meChecked && momChecked) {
+            visible = hasMe && hasMom;
+        } else if (meChecked) {
+            visible = hasMe;
+        } else if (momChecked) {
+            visible = hasMom;
+        } else {
+            visible = true;
+        }
+
+        img.style.display = visible ? '' : 'none';
+    });
+
+    if (!meChecked && !momChecked) {
+        filterInfo.textContent = 'Aucun filtre sélectionné.';
+    } else if (meChecked && momChecked) {
+        filterInfo.textContent = 'Pin\'s en commun.';
+    } else if (meChecked) {
+        filterInfo.textContent = 'Mes pin\'s';
+    } else {
+        filterInfo.textContent = 'Pin\'s de Maman';
+    }
+}
+
+filterToggle.addEventListener('click', () => filterPanel.classList.add('open'));
+filterClose.addEventListener('click', () => filterPanel.classList.remove('open'));
+filterMe.addEventListener('change', filterPins);
+filterMom.addEventListener('change', filterPins);
+window.addEventListener('load', () => {
+    filterPins();
+});
+</script>
+
+<audio id="music" src="../Kingdom Dance (From TangledScore).mp3" loop></audio>
+<script>
+const music = document.getElementById("music");
+
+window.addEventListener("load", () => {
+    // RESTAURER LE TEMPS
+    let time = parseFloat(localStorage.getItem("musicTime"));
+    if (!isNaN(time)) {
+        music.currentTime = time;
+    }
+
+    // RESTAURER LE VOLUME
+    let savedVolume = parseFloat(localStorage.getItem("musicVolume"));
+    if (!isNaN(savedVolume)) {
+        music.volume = savedVolume;
+        volumeSlider.value = savedVolume;
+    } else {
+        music.volume = 0.5;
+        volumeSlider.value = 0.5;
+    }
+
+    // RESTAURER L'ÉTAT DE LECTURE
+    let wasPlaying = localStorage.getItem("musicPlaying") === "true";
+    if (wasPlaying) {
+        let promise = music.play();
+        if (promise !== undefined) {
+            promise.catch(() => {
+                // Navigation inter-pages peut empêcher autoplay sans interaction utilisateur
+                console.log("Lecture automatique bloquée, appuyez sur Play.");
+            });
+        }
+    } else {
+        music.pause();
+    }
+
+    playPauseBtn.textContent = music.paused ? "▶️" : "⏸️";
+});
+
+/* SAUVEGARDER EN CONTINU */
+setInterval(() => {
+    localStorage.setItem("musicTime", music.currentTime);
+}, 500);
+</script>
+<script>
+window.addEventListener("beforeunload", () => {
+    localStorage.setItem("musicTime", music.currentTime);
+});
+</script>
+
+<!-- Menu de contrôle de la musique -->
+<div id="music-floating-btn">🎵</div>
+<div id="music-controls" class="hidden">
+    <button id="play-pause-btn">⏸️</button>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+</div>
+
+<script>
+const playPauseBtn = document.getElementById("play-pause-btn");
+const volumeSlider = document.getElementById("volume-slider");
+const floatingBtn = document.getElementById("music-floating-btn");
+const controls = document.getElementById("music-controls");
+
+// Initialiser le volume au chargement (sera écrasé par la restauration ci-dessus)
+music.volume = 0.5;
+
+// Toggle contrôle
+floatingBtn.addEventListener("click", () => {
+    controls.classList.toggle("hidden");
+});
+
+// Lecture/pause
+playPauseBtn.addEventListener("click", () => {
+    if (music.paused) {
+        music.play();
+        playPauseBtn.textContent = "⏸️";
+        localStorage.setItem("musicPlaying", "true");
+    } else {
+        music.pause();
+        playPauseBtn.textContent = "▶️";
+        localStorage.setItem("musicPlaying", "false");
+    }
+});
+
+// Slider volume
+volumeSlider.addEventListener("input", () => {
+    music.volume = parseFloat(volumeSlider.value);
+    localStorage.setItem("musicVolume", music.volume.toString());
+});
+
+// Mettre à jour l'icône quand la musique se termine
+music.addEventListener("ended", () => {
+    playPauseBtn.textContent = "▶️";
+    localStorage.setItem("musicPlaying", "false");
+});
+
+// Sauvegarder le statut lors de changement immédiat
+music.addEventListener("pause", () => {
+    localStorage.setItem("musicPlaying", "false");
+});
+
+music.addEventListener("play", () => {
+    localStorage.setItem("musicPlaying", "true");
+});
+</script>
+
+</body>
+
+</html>
+

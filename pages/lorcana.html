@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Collection Lorcana</title>
+<link rel="icon" href="../favicon.png">
+<link href="../style.css" rel="stylesheet" />
+
+<style>
+
+.titre {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.collection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 25px;
+    padding: 25px;
+}
+
+.carte-lorcana {
+    background-color: rgba(0,0,0,0.6);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: 0.2s;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+}
+
+.carte-lorcana:hover {
+    transform: scale(1.03);
+}
+
+.carte-lorcana img {
+    width: 100%;
+    display: block;
+}
+
+.infos {
+    padding: 15px;
+}
+
+.personnage {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.nom-carte {
+    opacity: 0.8;
+    margin-bottom: 15px;
+}
+
+.check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.check input {
+    width: 22px;
+    height: 22px;
+    accent-color: gold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="nav">
+
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+
+    
+
+    <a href="pin's.html" class="dropbtn">Pins</a>
+
+    <a href="piece.html" class="dropbtn">Pièces</a>
+
+    <a href="sejour.html" class="dropbtn">Séjour</a>
+
+    <a href="recherche.html" class="dropbtn">🔍</a>
+
+</header>
+
+<h1 class="titre">✨ Lorcana signées ✨</h1>
+
+<div class="collection">
+
+
+    <div class="carte-lorcana">
+        <img src="../cartes/mickey.webp">
+        <div class="infos">
+            <div class="personnage">Mickey</div>
+            <div class="nom-carte">Véritable ami</div>
+
+            <label class="check">
+                <input type="checkbox">
+                Je l'ai
+            </label>
+        </div>
+    </div>
+
+    <div class="carte-lorcana">
+        <img src="../cartes/mulan-en-pleine-reflexion.webp">
+        <div class="infos">
+            <div class="personnage">Mulan</div>
+            <div class="nom-carte">En pleine réflexion</div>
+
+            <label class="check">
+                <input type="checkbox">
+                Je l'ai
+            </label>
+        </div>
+    </div>
+
+    <div class="carte-lorcana">
+        <img src="../cartes/dingo.webp">
+        <div class="infos">
+            <div class="personnage">Dingo</div>
+            <div class="nom-carte">Super Dingo</div>
+
+            <label class="check">
+                <input type="checkbox">
+                Je l'ai
+            </label>
+        </div>
+    </div>
+
+    <div class="carte-lorcana">
+        <img src="../cartes/tic.webp">
+        <div class="infos">
+            <div class="personnage">Tic</div>
+            <div class="nom-carte">Chef des Rangers</div>
+
+            <label class="check">
+                <input type="checkbox">
+                Je l'ai
+            </label>
+        </div>
+    </div>
+
+    <div class="carte-lorcana">
+        <img src="../cartes/tac.webp">
+        <div class="infos">
+            <div class="personnage">Tac</div>
+            <div class="nom-carte">Ranger malicieux</div>
+
+            <label class="check">
+                <input type="checkbox">
+                Je l'ai
+            </label>
+        </div>
+    </div>
+
+    <div class="carte-lorcana">
+        <img src="../cartes/alice.webp">
+        <div class="infos">
+            <div class="personnage">Alice</div>
+            <div class="nom-carte">Alchimiste théinée</div>
+
+            <label class="check">
+                <input type="checkbox">
+                Je l'ai
+            </label>
+        </div>
+    </div>
+
+    <div class="carte-lorcana">
+        <img src="../cartes/cendrillon.webp">
+        <div class="infos">
+            <div class="personnage">Cendrillon</div>
+            <div class="nom-carte">Fait sensation au bal</div>
+
+            <label class="check">
+                <input type="checkbox">
+                Je l'ai
+            </label>
+        </div>
+    </div>
+
+</div>
+
+<script>
+document.querySelectorAll(".dropbtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+
+        let content = btn.nextElementSibling;
+
+        document.querySelectorAll(".content").forEach(menu => {
+            if(menu !== content) menu.classList.remove("open");
+        });
+
+        content.classList.toggle("open");
+    });
+});
+</script>
+
+</body>
+</html>

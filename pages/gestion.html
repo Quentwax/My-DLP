@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestionnaire de Journée DLP</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.column {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.column h2 {
+  text-align: center;
+}
+
+.item {
+  background: #e3e3e3;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.add-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: #007bff;
+  color: white;
+}
+
+.delete-btn {
+  background: red;
+  color: white;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+</style>
+</head>
+<body>
+
+<h1>🎢 Gestionnaire de Journée Disneyland</h1>
+
+<div class="container">
+
+  <div class="column">
+    <h2>Attractions</h2>
+    <div id="attractions"></div>
+    <input type="text" id="inputAttraction" placeholder="Ajouter une attraction">
+    <button class="add-btn" onclick="addItem('attractions','inputAttraction')">Ajouter</button>
+  </div>
+
+  <div class="column">
+    <h2>Spectacles</h2>
+    <div id="spectacles"></div>
+    <input type="text" id="inputSpectacle" placeholder="Ajouter un spectacle">
+    <button class="add-btn" onclick="addItem('spectacles','inputSpectacle')">Ajouter</button>
+  </div>
+
+  <div class="column">
+    <h2>Personnages</h2>
+    <div id="personnages"></div>
+    <input type="text" id="inputPerso" placeholder="Ajouter une rencontre">
+    <button class="add-btn" onclick="addItem('personnages','inputPerso')">Ajouter</button>
+  </div>
+
+</div>
+
+<script>
+function addItem(listId, inputId) {
+  const input = document.getElementById(inputId);
+  const value = input.value.trim();
+
+  if (value === '') return;
+
+  const div = document.createElement('div');
+  div.className = 'item';
+
+  const span = document.createElement('span');
+  span.textContent = value;
+
+  const btn = document.createElement('button');
+  btn.textContent = 'X';
+  btn.className = 'delete-btn';
+  btn.onclick = () => div.remove();
+
+  div.appendChild(span);
+  div.appendChild(btn);
+
+  document.getElementById(listId).appendChild(div);
+
+  input.value = '';
+}
+</script>
+
+</body>
+</html>
+
