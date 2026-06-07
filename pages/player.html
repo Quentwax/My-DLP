@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Disney Ambiance</title>
+
+<link rel="icon" href="../favicon.png">
+<link href="../style.css" rel="stylesheet" />
+
+<style>
+
+body{
+    margin:0;
+    min-height:100vh;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    transition:background-image 1s ease;
+}
+
+/* OVERLAY SOMBRE */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    z-index:-1;
+}
+
+.player{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    
+    width:340px;
+
+    background:rgba(20,20,20,0.85);
+    backdrop-filter:blur(10px);
+
+    border-radius:20px;
+    padding:15px;
+
+    color:white;
+
+    box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+.music-title{
+    text-align:center;
+    margin-bottom:10px;
+    font-weight:bold;
+}
+
+.controls{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+}
+
+.controls button{
+    background:#ffffff22;
+    border:none;
+    color:white;
+
+    width:45px;
+    height:45px;
+
+    border-radius:50%;
+    cursor:pointer;
+
+    font-size:18px;
+
+    transition:0.2s;
+}
+
+.controls button:hover{
+    background:#ffffff44;
+    transform:scale(1.1);
+}
+
+.volume{
+    width:100%;
+    margin-top:15px;
+}
+
+.active{
+    background:#ffd900 !important;
+    color:black !important;
+}
+
+.ambiance-title{
+    text-align:center;
+    color:white;
+    margin-top:120px;
+    font-size:3rem;
+    text-shadow:0 0 10px black;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="nav">
+
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+
+    <div class="dropdown">
+        <div class="dropbtn">Collections</div>
+        <div class="content">
+             <a href="pages/collection.html" class="dropbtn">Pins</a>
+            <a href="pages/piece.html" class="dropbtn">Pièces</a>
+            <a href="pages/lorcana.html" class="dropbtn">Lorcana</a>
+            
+        </div>
+    </div>
+
+    
+        <a href="planning.html" class="dropbtn">Planning</a>
+        <a href="pages/checklist.html" class="dropbtn">Checklist</a>
+        <a href="pages/sejour.html" class="dropbtn">Séjour</a>
+
+    <a href="pages/recherche.html" class="dropbtn">🔍</a>
+
+</header>
+
+<h1 class="ambiance-title">
+    Disney Ambiance ✨
+</h1>
+
+<!-- PLAYER AUDIO -->
+<audio id="audio"></audio>
+
+<!-- PLAYER -->
+<div class="player">
+
+    <div class="music-title" id="music-title">
+        Chargement...
+    </div>
+
+    <div class="controls">
+
+        <button id="shuffle-btn">🔀</button>
+
+        <button id="prev-btn">⏮️</button>
+
+        <button id="play-btn">▶️</button>
+
+        <button id="next-btn">⏭️</button>
+
+        <button id="loop-btn">🔁</button>
+
+    </div>
+
+    <input
+        type="range"
+        id="volume-slider"
+        class="volume"
+        min="0"
+        max="1"
+        step="0.01"
+    >
+
+</div>
+
+<!-- BACKGROUND -->
+<div class="background-layer" id="bg-layer"></div>
+
+<!-- OVERLAY -->
+<div class="overlay"></div>
+
+<!-- PARTICULES -->
+<div class="particles" id="particles"></div>
+
+<!-- HERO CARD -->
+<div class="hero-card">
+
+    <img id="hero-image" src="">
+
+    <div class="hero-info">
+
+        <h2 id="hero-title">
+            Chargement...
+        </h2>
+
+        <p>
+            Disney Ambiance Radio ✨
+        </p>
+
+    </div>
+
+</div>
+
+<!-- SON TRANSITION -->
+<audio
+    id="transition-sound"
+    src="../Disneyland Star Tours Chime cut.mp3">
+</audio>
+
+<script>
+
+/* ---------------- DROPDOWN ---------------- */
+
+document.querySelectorAll(".dropbtn").forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+        let content = btn.nextElementSibling;
+
+        document.querySelectorAll(".content").forEach(menu => {
+            if(menu !== content){
+                menu.classList.remove("open");
+            }
+        });
+
+        content.classList.toggle("open");
+    });
+});
+
+/* ---------------- PLAYLIST ---------------- */
+
+const musiques = [
+
+    {
+        title:"Tales Of Magic",
+        file:"../tales of magic.mp3",
+        background:"../shows/tales of magic.webp"
+    },
+
+    {
+        title:"Cascade Of Lights",
+        file:"../Disney Adventure World - Disney Cascade of Lights  We Can Be Heros.mp3",
+        background:"../shows/cascade_of_lights.jpg"
+    },
+
+    {
+        title:"Kingdom Dance",
+        file:"../Kingdom Dance (From TangledScore).mp3",
+        background:"../shows/moment_musical.jpg"
+    },
+
+    {
+        title:"Discoveryland",
+        file:"../space.mp3",
+        background:"../attraction/tot.jpg"
+    }
+
+];
+
+
+/* ---------------- VARIABLES ---------------- */
+
+const audio = document.getElementById("audio");
+
+const playBtn = document.getElementById("play-btn");
+const nextBtn = document.getElementById("next-btn");
+const prevBtn = document.getElementById("prev-btn");
+
+const shuffleBtn = document.getElementById("shuffle-btn");
+const loopBtn = document.getElementById("loop-btn");
+
+const volumeSlider = document.getElementById("volume-slider");
+
+const musicTitle = document.getElementById("music-title");
+
+let currentMusic = 0;
+
+const transitionSound =
+    document.getElementById("transition-sound");
+
+async function playTransition(){
+
+    transitionSound.currentTime = 0;
+
+    await transitionSound.play();
+}
+
+/* ---------------- CHARGER MUSIQUE ---------------- */
+
+function loadMusic(index){
+
+    currentMusic = index;
+
+    const music = musiques[index];
+
+    audio.src = music.file;
+
+    musicTitle.textContent = music.title;
+
+    document.getElementById("hero-title")
+        .textContent = music.title;
+
+    document.getElementById("hero-image")
+        .src = music.background;
+
+    document.getElementById("bg-layer")
+        .style.backgroundImage =
+        `url('${music.background}')`;
+
+    localStorage.setItem("musicIndex", index);
+}
+
+/* ---------------- PLAY / PAUSE ---------------- */
+
+function playMusic(){
+
+    audio.play();
+
+    playBtn.textContent = "⏸️";
+
+    localStorage.setItem("musicPlaying", "true");
+}
+
+function pauseMusic(){
+
+    audio.pause();
+
+    playBtn.textContent = "▶️";
+
+    localStorage.setItem("musicPlaying", "false");
+}
+
+playBtn.addEventListener("click", () => {
+
+    if(audio.paused){
+        playMusic();
+    }else{
+        pauseMusic();
+    }
+});
+
+/* ---------------- NEXT ---------------- */
+
+function nextMusic(){
+
+    if(shuffle){
+
+        let random;
+
+        do{
+            random = Math.floor(Math.random() * musiques.length);
+        }
+        while(random === currentMusic);
+
+        currentMusic = random;
+
+    }else{
+
+        currentMusic++;
+
+        if(currentMusic >= musiques.length){
+            currentMusic = 0;
+        }
+    }
+
+    audio.pause();
+
+    playTransition();
+
+    setTimeout(() => {
+
+        loadMusic(currentMusic);
+
+        playMusic();
+
+    }, 1200);
+}
+
+/* ---------------- PREVIOUS ---------------- */
+
+function prevMusic(){
+
+    currentMusic--;
+
+    if(currentMusic < 0){
+        currentMusic = musiques.length - 1;
+    }
+
+    loadMusic(currentMusic);
+
+    playMusic();
+}
+
+nextBtn.addEventListener("click", nextMusic);
+prevBtn.addEventListener("click", prevMusic);
+
+/* ---------------- SHUFFLE ---------------- */
+
+shuffleBtn.addEventListener("click", () => {
+
+    shuffle = !shuffle;
+
+    shuffleBtn.classList.toggle("active");
+
+    localStorage.setItem("shuffle", shuffle);
+});
+
+/* ---------------- LOOP ---------------- */
+
+loopBtn.addEventListener("click", () => {
+
+    loop = !loop;
+
+    audio.loop = loop;
+
+    loopBtn.classList.toggle("active");
+
+    localStorage.setItem("loop", loop);
+});
+
+/* ---------------- FIN MUSIQUE ---------------- */
+
+audio.addEventListener("ended", () => {
+
+    if(!loop){
+        nextMusic();
+    }
+});
+
+/* ---------------- VOLUME ---------------- */
+
+volumeSlider.addEventListener("input", () => {
+
+    audio.volume = volumeSlider.value;
+
+    localStorage.setItem(
+        "musicVolume",
+        volumeSlider.value
+    );
+});
+
+/* ---------------- SAUVEGARDE TEMPS ---------------- */
+
+setInterval(() => {
+
+    localStorage.setItem(
+        "musicTime",
+        audio.currentTime
+    );
+
+}, 1000);
+
+/* ---------------- RESTAURATION ---------------- */
+
+window.addEventListener("load", () => {
+
+    let savedIndex =
+        parseInt(localStorage.getItem("musicIndex"));
+
+    if(!isNaN(savedIndex)){
+        currentMusic = savedIndex;
+    }
+
+    loadMusic(currentMusic);
+
+    /* TEMPS */
+    let savedTime =
+        parseFloat(localStorage.getItem("musicTime"));
+
+    if(!isNaN(savedTime)){
+        audio.currentTime = savedTime;
+    }
+
+    /* VOLUME */
+    let savedVolume =
+        parseFloat(localStorage.getItem("musicVolume"));
+
+    if(!isNaN(savedVolume)){
+        audio.volume = savedVolume;
+        volumeSlider.value = savedVolume;
+    }else{
+        audio.volume = 0.5;
+        volumeSlider.value = 0.5;
+    }
+
+    /* SHUFFLE */
+    shuffle =
+        localStorage.getItem("shuffle") === "true";
+
+    if(shuffle){
+        shuffleBtn.classList.add("active");
+    }
+
+    /* LOOP */
+    loop =
+        localStorage.getItem("loop") === "true";
+
+    audio.loop = loop;
+
+    if(loop){
+        loopBtn.classList.add("active");
+    }
+
+    /* PLAY */
+    const wasPlaying =
+        localStorage.getItem("musicPlaying") === "true";
+
+    if(wasPlaying){
+
+        audio.play().then(() => {
+
+            playBtn.textContent = "⏸️";
+
+        }).catch(() => {
+
+            playBtn.textContent = "▶️";
+        });
+    }
+});
+
+const particlesContainer =
+    document.getElementById("particles");
+
+for(let i = 0; i < 40; i++){
+
+    const particle =
+        document.createElement("div");
+
+    particle.classList.add("particle");
+
+    particle.style.left =
+        Math.random() * 100 + "%";
+
+    particle.style.animationDuration =
+        (10 + Math.random() * 20) + "s";
+
+    particle.style.opacity =
+        Math.random();
+
+    particle.style.transform =
+        `scale(${Math.random() * 2})`;
+
+    particlesContainer.appendChild(particle);
+}
+
+</script>
+
+</body>
+</html>
