@@ -86,6 +86,26 @@ onAuthStateChanged(auth, (user) => {
       btn.textContent = "Connecté ✅";
     }
 
+    // Initialiser les références Firebase pour les activités
+    activitiesRef = ref(db, 'planning/activities');
+    eventsRef = ref(db, 'planning/events');
+    
+    // Charger les événements en temps réel
+    onValue(eventsRef, (snapshot) => {
+      eventsData = snapshot.val() || {};
+      updateDateSelect();
+    });
+    
+    // Charger les activités en temps réel
+    onValue(activitiesRef, (snapshot) => {
+      activitiesData = snapshot.val() || {};
+      
+      // Mettre à jour les compteurs pour toutes les attractions
+      attractions.forEach(attraction => {
+        updateActivityCount(attraction);
+      });
+    });
+
   } else {
 
     console.log("Pas connecté");
@@ -97,74 +117,6 @@ onAuthStateChanged(auth, (user) => {
   }
 
 });
-
-
-// AJOUTER +1
-window.addCount = async function(id) {
-
-  if (!auth.currentUser) {
-
-    alert("Connecte-toi avant de modifier");
-
-    return;
-
-  }
-
-  const countRef = ref(db, 'attractions/' + id);
-
-  const snapshot = await get(countRef);
-
-  let value = snapshot.val() || 0;
-
-  await set(countRef, value + 1);
-
-};
-
-
-// RETIRER -1
-window.removeCount = async function(id) {
-
-  if (!auth.currentUser) {
-
-    alert("Connecte-toi avant de modifier");
-
-    return;
-
-  }
-
-  const countRef = ref(db, 'attractions/' + id);
-
-  const snapshot = await get(countRef);
-
-  let value = snapshot.val() || 0;
-
-  if (value > 0) {
-
-    await set(countRef, value - 1);
-
-  }
-
-};
-
-
-// CHARGEMENT EN TEMPS RÉEL
-function loadCount(id) {
-
-  const countRef = ref(db, 'attractions/' + id);
-
-  onValue(countRef, (snapshot) => {
-
-    const element = document.getElementById("count-" + id);
-
-    if(element){
-
-      element.innerText = snapshot.val() || 0;
-
-    }
-
-  });
-
-}
 
 
 // LISTE DES ATTRACTIONS
@@ -210,16 +162,239 @@ const attractions = [
 
 ];
 
+// MAP d'attractions pour conversion ID -> NOM
+const attractionsMap = {
+  "btm": "Big Thunder Mountain",
+  "space": "Hyperspace Mountain",
+  "indiana_jones": "Indiana Jones",
+  "pirates": "Pirates of the Caribbean",
+  "buzz": "Buzz Lightyear",
+  "dumbo": "Dumbo",
+  "small_world": "It's a Small World",
+  "star_tours": "Star Tours",
+  "flight_force": "Flight Force",
+  "web": "WEB Adventure",
+  "crush_coaster": "Crush Coaster",
+  "frozen": "Frozen Ever After",
+  "peter_pan": "Peter Pan's Flight",
+  "thunder_mesa": "Thunder Mesa Riverboat",
+  "phantom_manor": "Phantom Manor",
+  "mad_hatter_tea_cups": "Mad Hatter's Tea Cups",
+  "casey_jr": "Casey Jr.",
+  "cabane_robinson": "La Cabane des Robinson",
+  "nautilus": "Le Nautilus",
+  "carrousel_lancelot": "Le Carrousel de Lancelot",
+  "autopia": "Autopia",
+  "railroad": "Disneyland Railroad",
+  "pinocchio": "Pinocchio",
+  "orbitron": "Orbitron",
+  "labyrinthe_alice": "Le Labyrinthe d'Alice",
+  "blanche_neige": "Blanche-Neige",
+  "passage_aladdin": "Le Passage Enchanté d'Aladdin",
+  "contes_fees": "Le Pays des Contes de Fées",
+  "tower_terror": "Tower Of Terror",
+  "ratatouille": "Ratatouille",
+  "cars_road_trip": "Cars Road Trip",
+  "cars_quatre_roues": "Cars Quatre Roues Rallye",
+  "tapis_volants": "Les Tapis Volants",
+  "raiponce_spin": "Raiponce Tangled Spin",
+  "rc_racer": "RC Racer",
+  "slinky_dog": "Slinky Dog Zigzag Spin",
+  "toy_soldiers": "Toy Soldiers Parachute Drop"
+};
 
-// CHARGEMENT
+const attractionCategories = {
+  "btm": "family",
+  "space": "thrill",
+  "indiana_jones": "thrill",
+  "pirates": "family",
+  "buzz": "family",
+  "dumbo": "family",
+  "small_world": "family",
+  "star_tours": "family",
+  "flight_force": "thrill",
+  "web": "family",
+  "crush_coaster": "thrill",
+  "frozen": "family",
+  "peter_pan": "family",
+  "thunder_mesa": "walk",
+  "phantom_manor": "family",
+  "mad_hatter_tea_cups": "family",
+  "casey_jr": "family",
+  "cabane_robinson": "walk",
+  "nautilus": "walk",
+  "carrousel_lancelot": "family",
+  "autopia": "family",
+  "railroad": "walk",
+  "pinocchio": "family",
+  "orbitron": "family",
+  "labyrinthe_alice": "walk",
+  "blanche_neige": "family",
+  "passage_aladdin": "walk",
+  "contes_fees": "family",
+  "tower_terror": "thrill",
+  "ratatouille": "family",
+  "cars_road_trip": "family",
+  "cars_quatre_roues": "family",
+  "tapis_volants": "family",
+  "raiponce_spin": "family",
+  "rc_racer": "thrill",
+  "slinky_dog": "family",
+  "toy_soldiers": "family"
+};
+
+// RÉFÉRENCES FIREBASE POUR LES ACTIVITÉS
+let activitiesRef = null;
+let eventsRef = null;
+let activitiesData = {};
+let eventsData = {};
+let selectedDateForCounter = "global";
+let dateOptions = [];
+
+// INITIALISER LES DONNÉES
 window.addEventListener("load", () => {
-
   attractions.forEach(attraction => {
+    loadActivityCount(attraction);
+  });
+});
 
-    loadCount(attraction);
+// CHARGER LES ACTIVITÉS EN TEMPS RÉEL
+function loadActivityCount(attractionId) {
+  const countElement = document.getElementById("count-" + attractionId);
+  if(!countElement) return;
+  updateActivityCount(attractionId);
+}
 
+function updateActivityCount(attractionId) {
+  const countElement = document.getElementById("count-" + attractionId);
+  if(!countElement) return;
+
+  let count = 0;
+  
+  if (selectedDateForCounter === "global") {
+    // Compter sur TOUTES les dates
+    Object.values(activitiesData).forEach(dayActivities => {
+      count += (dayActivities || []).filter(id => id === attractionId).length;
+    });
+  } else {
+    // Compter pour la date spécifique
+    const dayActivities = activitiesData[selectedDateForCounter] || [];
+    count = dayActivities.filter(id => id === attractionId).length;
+  }
+  
+  countElement.innerText = count;
+}
+
+// METTRE À JOUR LE SELECT DE DATES
+function updateDateSelect() {
+  const dateSelect = document.getElementById('selected-date-select');
+  if (!dateSelect) return;
+
+  // Récupérer les dates avec événements
+  const datesWithEvents = Object.keys(eventsData || {}).filter(eventId => {
+    const event = eventsData[eventId];
+    return event && event.start;
+  }).map(eventId => eventsData[eventId].start).filter((v, i, a) => a.indexOf(v) === i).sort();
+
+  // Reconstruire le select
+  dateSelect.innerHTML = '<option value="global">📊 Total global</option>';
+  
+  datesWithEvents.forEach(date => {
+    const displayDate = new Date(date).toLocaleDateString('fr-FR');
+    dateSelect.innerHTML += `<option value="${date}">${displayDate}</option>`;
   });
 
+  dateOptions = datesWithEvents;
+}
+
+// AJOUTER UNE ACTIVITÉ
+window.addActivityCount = async function(id) {
+  if (!auth.currentUser) {
+    alert("Connecte-toi avant de modifier");
+    return;
+  }
+
+  if (!activitiesRef) return;
+
+  if (selectedDateForCounter === "global") {
+    alert("Sélectionnez une date spécifique pour ajouter une activité");
+    return;
+  }
+
+  if (!activitiesData[selectedDateForCounter]) {
+    activitiesData[selectedDateForCounter] = [];
+  }
+
+  activitiesData[selectedDateForCounter].push(id);
+  await set(activitiesRef, activitiesData);
+};
+
+// RETIRER UNE ACTIVITÉ
+window.removeActivityCount = async function(id) {
+  if (!auth.currentUser) {
+    alert("Connecte-toi avant de modifier");
+    return;
+  }
+
+  if (!activitiesRef) return;
+
+  if (selectedDateForCounter === "global") {
+    alert("Sélectionnez une date spécifique pour retirer une activité");
+    return;
+  }
+
+  if (!activitiesData[selectedDateForCounter]) {
+    activitiesData[selectedDateForCounter] = [];
+  }
+
+  const index = activitiesData[selectedDateForCounter].indexOf(id);
+  if (index > -1) {
+    activitiesData[selectedDateForCounter].splice(index, 1);
+  }
+
+  await set(activitiesRef, activitiesData);
+};
+
+// CHANGER LA DATE SÉLECTIONNÉE
+window.changeDateForCounter = function(newDate) {
+  selectedDateForCounter = newDate;
+  attractions.forEach(attraction => {
+    updateActivityCount(attraction);
+  });
+};
+
+// FILTRAGE PAR CATÉGORIE ET RECHERCHE
+function filterAttractions() {
+  const category = document.getElementById('filterCategory').value;
+  const searchText = document.getElementById('searchAttraction').value.trim().toLowerCase();
+  const rows = document.querySelectorAll('.attractions-table tbody tr');
+
+  rows.forEach(row => {
+    const countSpan = row.querySelector('.counter-display');
+    if (!countSpan) return;
+
+    const attractionId = countSpan.id.replace('count-', '');
+    const attractionCategory = attractionCategories[attractionId] || 'all';
+    const attractionName = row.querySelector('td').textContent.trim().toLowerCase();
+
+    const matchesCategory = category === 'all' || attractionCategory === category;
+    const matchesSearch = searchText === '' || attractionName.includes(searchText);
+
+    row.style.display = matchesCategory && matchesSearch ? '' : 'none';
+  });
+}
+
+window.addEventListener('load', () => {
+  const filterSelect = document.getElementById('filterCategory');
+  const searchInput = document.getElementById('searchAttraction');
+
+  if (filterSelect) {
+    filterSelect.addEventListener('change', filterAttractions);
+  }
+  if (searchInput) {
+    searchInput.addEventListener('input', filterAttractions);
+  }
+  filterAttractions();
 });
 
 </script>
@@ -232,17 +407,13 @@ window.addEventListener("load", () => {
 
     <a href="../index.html" class="logo">✨ Disneyland</a>
 
-    <a href="sejour.html" class="dropbtn">Checklist</a>
+    <a href="sejour.html" class="dropbtn">Séjour</a>
+    <a href="checklist.html" class="dropbtn">Checklist</a>
+    <a href="../planning.html" class="dropbtn">Planning</a>
 
     <div class="dropdown">
 
-        <div class="dropbtn">🔍</div>
-
-        <div class="content">
-            <a href="Attractions.html">Attractions</a>
-            <a href="shows.html">Shows</a>
-            <a href="meetings.html">Meetings</a>
-        </div>
+        <a href="recherche.html" class="dropbtn">🔍</a>
 
     </div>
 
@@ -297,7 +468,15 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
 
 </div>
 
-    <h1>Parc Principal</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+        <h1>Parc Principal</h1>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <label for="selected-date-select" style="font-weight: 600;">Période :</label>
+            <select id="selected-date-select" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em;" onchange="changeDateForCounter(this.value)">
+                <option value="global">📊 Total global</option>
+            </select>
+        </div>
+    </div>
 
     <table class="attractions-table">
 
@@ -316,9 +495,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Big Thunder Mountain</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('btm')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('btm')">-1</button>
                         <span class="counter-display" id="count-btm">0</span>
-                        <button class="counter-btn plus" onclick="addCount('btm')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('btm')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -327,9 +506,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Hyperspace Mountain</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('space')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('space')">-1</button>
                         <span class="counter-display" id="count-space">0</span>
-                        <button class="counter-btn plus" onclick="addCount('space')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('space')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -338,9 +517,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Indiana Jones</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('indiana_jones')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('indiana_jones')">-1</button>
                         <span class="counter-display" id="count-indiana_jones">0</span>
-                        <button class="counter-btn plus" onclick="addCount('indiana_jones')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('indiana_jones')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -349,9 +528,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Pirates of the Caribbean</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('pirates')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('pirates')">-1</button>
                         <span class="counter-display" id="count-pirates">0</span>
-                        <button class="counter-btn plus" onclick="addCount('pirates')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('pirates')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -360,9 +539,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Buzz Lightyear</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('buzz')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('buzz')">-1</button>
                         <span class="counter-display" id="count-buzz">0</span>
-                        <button class="counter-btn plus" onclick="addCount('buzz')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('buzz')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -371,9 +550,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Dumbo</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('dumbo')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('dumbo')">-1</button>
                         <span class="counter-display" id="count-dumbo">0</span>
-                        <button class="counter-btn plus" onclick="addCount('dumbo')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('dumbo')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -382,9 +561,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>It's a Small World</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('small_world')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('small_world')">-1</button>
                         <span class="counter-display" id="count-small_world">0</span>
-                        <button class="counter-btn plus" onclick="addCount('small_world')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('small_world')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -393,9 +572,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Star Tours</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('star_tours')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('star_tours')">-1</button>
                         <span class="counter-display" id="count-star_tours">0</span>
-                        <button class="counter-btn plus" onclick="addCount('star_tours')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('star_tours')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -404,9 +583,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Peter Pan's Flight</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('peter_pan')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('peter_pan')">-1</button>
                         <span class="counter-display" id="count-peter_pan">0</span>
-                        <button class="counter-btn plus" onclick="addCount('peter_pan')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('peter_pan')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -415,9 +594,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Thunder Mesa Riverboat</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('thunder_mesa')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('thunder_mesa')">-1</button>
                         <span class="counter-display" id="count-thunder_mesa">0</span>
-                        <button class="counter-btn plus" onclick="addCount('thunder_mesa')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('thunder_mesa')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -426,9 +605,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Phantom Manor</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('phantom_manor')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('phantom_manor')">-1</button>
                         <span class="counter-display" id="count-phantom_manor">0</span>
-                        <button class="counter-btn plus" onclick="addCount('phantom_manor')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('phantom_manor')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -437,9 +616,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Mad Hatter's Tea Cups</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('mad_hatter_tea_cups')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('mad_hatter_tea_cups')">-1</button>
                         <span class="counter-display" id="count-mad_hatter_tea_cups">0</span>
-                        <button class="counter-btn plus" onclick="addCount('mad_hatter_tea_cups')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('mad_hatter_tea_cups')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -448,9 +627,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Casey Jr.</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('casey_jr')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('casey_jr')">-1</button>
                         <span class="counter-display" id="count-casey_jr">0</span>
-                        <button class="counter-btn plus" onclick="addCount('casey_jr')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('casey_jr')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -459,9 +638,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>La Cabane des Robinson</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('cabane_robinson')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('cabane_robinson')">-1</button>
                         <span class="counter-display" id="count-cabane_robinson">0</span>
-                        <button class="counter-btn plus" onclick="addCount('cabane_robinson')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('cabane_robinson')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -470,9 +649,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Le Nautilus</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('nautilus')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('nautilus')">-1</button>
                         <span class="counter-display" id="count-nautilus">0</span>
-                        <button class="counter-btn plus" onclick="addCount('nautilus')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('nautilus')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -481,9 +660,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Le Carrousel de Lancelot</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('carrousel_lancelot')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('carrousel_lancelot')">-1</button>
                         <span class="counter-display" id="count-carrousel_lancelot">0</span>
-                        <button class="counter-btn plus" onclick="addCount('carrousel_lancelot')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('carrousel_lancelot')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -492,9 +671,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Autopia</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('autopia')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('autopia')">-1</button>
                         <span class="counter-display" id="count-autopia">0</span>
-                        <button class="counter-btn plus" onclick="addCount('autopia')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('autopia')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -503,9 +682,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Disneyland Railroad</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('railroad')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('railroad')">-1</button>
                         <span class="counter-display" id="count-railroad">0</span>
-                        <button class="counter-btn plus" onclick="addCount('railroad')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('railroad')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -514,9 +693,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Pinocchio</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('pinocchio')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('pinocchio')">-1</button>
                         <span class="counter-display" id="count-pinocchio">0</span>
-                        <button class="counter-btn plus" onclick="addCount('pinocchio')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('pinocchio')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -525,9 +704,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Orbitron</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('orbitron')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('orbitron')">-1</button>
                         <span class="counter-display" id="count-orbitron">0</span>
-                        <button class="counter-btn plus" onclick="addCount('orbitron')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('orbitron')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -536,9 +715,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Le Labyrinthe d'Alice</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('labyrinthe_alice')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('labyrinthe_alice')">-1</button>
                         <span class="counter-display" id="count-labyrinthe_alice">0</span>
-                        <button class="counter-btn plus" onclick="addCount('labyrinthe_alice')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('labyrinthe_alice')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -547,9 +726,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Blanche-Neige</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('blanche_neige')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('blanche_neige')">-1</button>
                         <span class="counter-display" id="count-blanche_neige">0</span>
-                        <button class="counter-btn plus" onclick="addCount('blanche_neige')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('blanche_neige')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -558,9 +737,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Le Passage Enchanté d'Aladdin</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('passage_aladdin')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('passage_aladdin')">-1</button>
                         <span class="counter-display" id="count-passage_aladdin">0</span>
-                        <button class="counter-btn plus" onclick="addCount('passage_aladdin')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('passage_aladdin')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -569,9 +748,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Le Pays des Contes de Fées</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('contes_fees')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('contes_fees')">-1</button>
                         <span class="counter-display" id="count-contes_fees">0</span>
-                        <button class="counter-btn plus" onclick="addCount('contes_fees')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('contes_fees')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -601,9 +780,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Flight Force</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('flight_force')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('flight_force')">-1</button>
                         <span class="counter-display" id="count-flight_force">0</span>
-                        <button class="counter-btn plus" onclick="addCount('flight_force')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('flight_force')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -612,9 +791,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>WEB Adventure</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('web')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('web')">-1</button>
                         <span class="counter-display" id="count-web">0</span>
-                        <button class="counter-btn plus" onclick="addCount('web')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('web')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -623,9 +802,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Crush Coaster</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('crush_coaster')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('crush_coaster')">-1</button>
                         <span class="counter-display" id="count-crush_coaster">0</span>
-                        <button class="counter-btn plus" onclick="addCount('crush_coaster')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('crush_coaster')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -634,9 +813,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <td>Frozen Ever After</td>
                 <td>
                     <div class="counter-controls">
-                        <button class="counter-btn minus" onclick="removeCount('frozen')">-1</button>
+                        <button class="counter-btn minus" onclick="removeActivityCount('frozen')">-1</button>
                         <span class="counter-display" id="count-frozen">0</span>
-                        <button class="counter-btn plus" onclick="addCount('frozen')">+1</button>
+                        <button class="counter-btn plus" onclick="addActivityCount('frozen')">+1</button>
                     </div>
                 </td>
             </tr>
@@ -645,9 +824,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <td>Tower Of Terror</td>
     <td>
         <div class="counter-controls">
-            <button class="counter-btn minus" onclick="removeCount('tower_terror')">-1</button>
+            <button class="counter-btn minus" onclick="removeActivityCount('tower_terror')">-1</button>
             <span class="counter-display" id="count-tower_terror">0</span>
-            <button class="counter-btn plus" onclick="addCount('tower_terror')">+1</button>
+            <button class="counter-btn plus" onclick="addActivityCount('tower_terror')">+1</button>
         </div>
     </td>
 </tr>
@@ -656,9 +835,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <td>Ratatouille</td>
     <td>
         <div class="counter-controls">
-            <button class="counter-btn minus" onclick="removeCount('ratatouille')">-1</button>
+            <button class="counter-btn minus" onclick="removeActivityCount('ratatouille')">-1</button>
             <span class="counter-display" id="count-ratatouille">0</span>
-            <button class="counter-btn plus" onclick="addCount('ratatouille')">+1</button>
+            <button class="counter-btn plus" onclick="addActivityCount('ratatouille')">+1</button>
         </div>
     </td>
 </tr>
@@ -667,9 +846,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <td>Cars Road Trip</td>
     <td>
         <div class="counter-controls">
-            <button class="counter-btn minus" onclick="removeCount('cars_road_trip')">-1</button>
+            <button class="counter-btn minus" onclick="removeActivityCount('cars_road_trip')">-1</button>
             <span class="counter-display" id="count-cars_road_trip">0</span>
-            <button class="counter-btn plus" onclick="addCount('cars_road_trip')">+1</button>
+            <button class="counter-btn plus" onclick="addActivityCount('cars_road_trip')">+1</button>
         </div>
     </td>
 </tr>
@@ -678,9 +857,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <td>Cars Quatre Roues Rallye</td>
     <td>
         <div class="counter-controls">
-            <button class="counter-btn minus" onclick="removeCount('cars_quatre_roues')">-1</button>
+            <button class="counter-btn minus" onclick="removeActivityCount('cars_quatre_roues')">-1</button>
             <span class="counter-display" id="count-cars_quatre_roues">0</span>
-            <button class="counter-btn plus" onclick="addCount('cars_quatre_roues')">+1</button>
+            <button class="counter-btn plus" onclick="addActivityCount('cars_quatre_roues')">+1</button>
         </div>
     </td>
 </tr>
@@ -689,9 +868,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <td>Les Tapis Volants</td>
     <td>
         <div class="counter-controls">
-            <button class="counter-btn minus" onclick="removeCount('tapis_volants')">-1</button>
+            <button class="counter-btn minus" onclick="removeActivityCount('tapis_volants')">-1</button>
             <span class="counter-display" id="count-tapis_volants">0</span>
-            <button class="counter-btn plus" onclick="addCount('tapis_volants')">+1</button>
+            <button class="counter-btn plus" onclick="addActivityCount('tapis_volants')">+1</button>
         </div>
     </td>
 </tr>
@@ -700,9 +879,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <td>Raiponce Tangled Spin</td>
     <td>
         <div class="counter-controls">
-            <button class="counter-btn minus" onclick="removeCount('raiponce_spin')">-1</button>
+            <button class="counter-btn minus" onclick="removeActivityCount('raiponce_spin')">-1</button>
             <span class="counter-display" id="count-raiponce_spin">0</span>
-            <button class="counter-btn plus" onclick="addCount('raiponce_spin')">+1</button>
+            <button class="counter-btn plus" onclick="addActivityCount('raiponce_spin')">+1</button>
         </div>
     </td>
 </tr>
@@ -711,9 +890,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <td>RC Racer</td>
     <td>
         <div class="counter-controls">
-            <button class="counter-btn minus" onclick="removeCount('rc_racer')">-1</button>
+            <button class="counter-btn minus" onclick="removeActivityCount('rc_racer')">-1</button>
             <span class="counter-display" id="count-rc_racer">0</span>
-            <button class="counter-btn plus" onclick="addCount('rc_racer')">+1</button>
+            <button class="counter-btn plus" onclick="addActivityCount('rc_racer')">+1</button>
         </div>
     </td>
 </tr>
@@ -722,9 +901,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <td>Slinky Dog Zigzag Spin</td>
     <td>
         <div class="counter-controls">
-            <button class="counter-btn minus" onclick="removeCount('slinky_dog')">-1</button>
+            <button class="counter-btn minus" onclick="removeActivityCount('slinky_dog')">-1</button>
             <span class="counter-display" id="count-slinky_dog">0</span>
-            <button class="counter-btn plus" onclick="addCount('slinky_dog')">+1</button>
+            <button class="counter-btn plus" onclick="addActivityCount('slinky_dog')">+1</button>
         </div>
     </td>
 </tr>
@@ -733,9 +912,9 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <td>Toy Soldiers Parachute Drop</td>
     <td>
         <div class="counter-controls">
-            <button class="counter-btn minus" onclick="removeCount('toy_soldiers')">-1</button>
+            <button class="counter-btn minus" onclick="removeActivityCount('toy_soldiers')">-1</button>
             <span class="counter-display" id="count-toy_soldiers">0</span>
-            <button class="counter-btn plus" onclick="addCount('toy_soldiers')">+1</button>
+            <button class="counter-btn plus" onclick="addActivityCount('toy_soldiers')">+1</button>
         </div>
     </td>
 </tr>

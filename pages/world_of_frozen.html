@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Adventure World</title>
+<title>Arendelle</title>
 <link rel="icon" href="../favicon.png">
 <link href="../style.css" rel="stylesheet" />
 </head>
@@ -22,7 +22,7 @@
             <a href="adventureworld.html">Adventure World</a>
         </div>
     </div>
-
+    
     <div class="dropdown">
         <div class="dropbtn">Lands</div>
         <div class="content">
@@ -36,7 +36,7 @@
 
 </header>
 
-<h1 class="titre">Adventure World</h1>
+<h1 class="titre">Arendelle</h1>
 
 
 
@@ -55,28 +55,26 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     });
 });
 </script>
-
-<div class="map">
-  <img src="../adventureworld.png">
-
-  <a href="worldpremiere.html" class="rectangle" style="width: 10.6%; height: 6.1%; bottom: 22.2%; left: 24.7%;">
-  </a>
-
-  <a href="world_of_frozen.html" class="rectangle" style="width: 11%; height: 5.8%; top: 21.5%; right: 28.4%;">
-  </a>
-
-  <a href="avengerscampus.html" class="rectangle" style="width: 11%; height: 4.8%; top: 54.8%; left: 6.6%;">
-  </a>
-
-  <a href="worlds_of_pixar.html" class="rectangle" style="width: 10%; height: 4%; top: 55.5%; right: 8.6%;">
-  </a>
-
-  <a href="adventureway.html" class="rectangle" style="width: 11%; height: 4.4%; bottom: 62%; right: 59.75%;">
-  </a>
+<div class="boxcontainer">
+<div class="box">
+<img class="map" src="../land_photos/arendelle.jpg" alt="Arendelle">
 </div>
+ </div>
 
+ <div class="boxcontainer">
+<div class="box">
+ <p>
+Avec son genre unique et son style américain des années 60. Main Street est l'allée 
+principale du parc, elle s'étend de l'entrée du parc à Central Plaza. Cette longue avenue 
+qui offre une vue splendide du Château de la belle au bois dormant mène à Central Plaza, 
+un rond point, le point central du parc qui donne un accès direct aux quatres ~lands~. 
+Dans Main Street vous pourrez y retrouver la gare, la mairie City Hall, le kiosque central
+ "Town Square" et de deux arcardes : Liberty Arcade et Discovery Arcade.
+    </p>
+</div>
+ </div>
 
-<audio id="music" src="../Disney Adventure World - Disney Cascade of Lights  We Can Be Heros.mp3" loop></audio>
+<audio id="music" src="../world_of_pixar_theme.mp3" loop></audio>
 <script>
 const music = document.getElementById("music");
 

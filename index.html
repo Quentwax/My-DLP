@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>My Disneyland Paris</title>
-<link rel="icon" href="favicon.png">
+<link rel="icon" href="favicon2.png">
 <link href="style.css" rel="stylesheet" />
 
 <script type="module">
@@ -80,7 +80,7 @@ window.login = function() {
     
         <a href="planning.html" class="dropbtn">Planning</a>
         <a href="pages/checklist.html" class="dropbtn">Checklist</a>
-        <a href="pages/sejour.html" class="dropbtn">Séjour</a>
+        <a href="pages/numb_coaster.html" class="dropbtn">Nombre Attractions</a>
     
      
     
@@ -110,7 +110,7 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
 <h1 class="titre">My Disneyland Paris ✨</h1>
 
 
-<div class="map">
+<div class="map" style="margin-bottom: 50px;">
   <img src="menu_dlp.png">
 
   <a href="pages/park.html" class="rectangle" style="width: 50%; height: 86%; bottom: 0%; left: 0%;">
@@ -120,6 +120,90 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
   </a>
 
 </div>
+
+<div class="weather-week">
+    <h2>🌤️ Prévisions Disneyland Paris</h2>
+
+    <div id="weather-container" class="weather-grid">
+        <div class="weather-loading">Chargement...</div>
+    </div>
+</div>
+
+<script>
+const API_KEY = "d6ee967f1b430c4e4928c102b7f5e360";
+
+const lat = 48.867;
+const lon = 2.783;
+
+fetch(
+`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${API_KEY}`
+)
+.then(res => res.json())
+.then(data => {
+
+    console.log(data); // DEBUG
+
+    const container = document.getElementById("weather-container");
+    container.innerHTML = "";
+
+    // On prend 1 prévision par jour (approx)
+    const dailyMap = {};
+
+    data.list.forEach(item => {
+        const date = new Date(item.dt * 1000);
+        const day = date.toISOString().split("T")[0];
+
+        if (!dailyMap[day]) {
+            dailyMap[day] = item;
+        }
+    });
+
+    Object.values(dailyMap).slice(0,7).forEach(day => {
+
+        const date = new Date(day.dt * 1000);
+
+        const nomJour = date.toLocaleDateString("fr-FR", {
+            weekday: "short"
+        });
+
+        container.innerHTML += `
+            <div class="weather-day">
+                <div class="date">${nomJour}</div>
+
+                <img src="https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png">
+
+                <div>${day.weather[0].description}</div>
+
+                <div class="temp">
+                    ${Math.round(day.main.temp)}°
+                </div>
+            </div>
+        `;
+    });
+
+})
+.catch(err => {
+    console.error("Erreur météo :", err);
+});
+</script>
+<footer>
+    <img style="width: 10%;" src="images/logo_quentwax.png" alt="Logo Lorcana">
+    <p style="font-size: 120%;">Pour me contacter :</p>
+
+<br>
+
+		<a class="socials" href="https://mail.google.com/mail/?view=cm&amp;to=quentwax76@gmail.com" target="_blank"> 
+   			<img src="images/logo_gmail.png" alt="Envoyer un mail">
+		</a>
+	
+		<a class="socials" href="https://www.facebook.com/profile.php?id=100077318054317&amp;locale=fr_FR" target="_blank">
+		   	 <img src="images/logo_facebook.png" alt="Logo Facebook">
+		</a>
+
+		<a class="socials" href="https://www.instagram.com/quentwax?igsh=c2g2cnNoM3lha2dz" target="_blank">
+		    <img src="images/logo_insta.png" alt="Logo Instagram">
+		</a>
+</footer>
 
                                                     <!-- Menu de contrôle de la musique -->
 <audio id="music"></audio>

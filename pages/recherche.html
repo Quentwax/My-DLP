@@ -14,7 +14,7 @@
     border: 2px solid red !important;
 }
 
-.suggestion-item {
+.suggestion-item { 
     padding: 10px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
@@ -94,8 +94,8 @@
     <div class="dropdown">
         <div class="dropbtn">Les Parcs</div>
         <div class="content">
-            <a href="pages/park.html">Parc Principal</a>
-            <a href="pages/adventureworld.html">Adventure World</a>
+            <a href="park.html">Parc Principal</a>
+            <a href="adventureworld.html">Adventure World</a>
         </div>
     </div>
 
@@ -131,7 +131,7 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
 
     <div class="search-wrapper">
         <div style="margin:0" class="search-box">
-            <input type="text" id="search-input" placeholder="Tapez pour voir les suggestions...">
+            <input type="text" id="search-input" placeholder="Rechercher...">
             <button id="search-clear" style="display: none;">✕</button>
         </div>
 
@@ -242,7 +242,7 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
         <span class="tooltip">Disney Stars on Parade</span>
       </div>
 
-      <div class="point spectacle" data-img="../shows/tales_of_magic.jpg" data-title="Disney Tales of Magic" data-horaires="Tous les soirs à 22:40" style="top: 35%; left: 50.2%;">
+      <div class="point spectacle" data-img="../shows/tales of magic.webp" data-title="Disney Tales of Magic" data-horaires="Tous les soirs à 22:40" style="top: 35%; left: 50.2%;">
         <span class="tooltip">Disney Tales of Magic</span>
       </div>
 
@@ -250,8 +250,12 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
         <span class="tooltip">A Million Splashes Of Colour</span>
       </div>
 
-      <div class="point spectacle" data-img="../shows/philharmagique.jpg" data-title="Mickey et son PhilharMagique" data-horaires="12:30, 13:00, 13:30, 14:00, 14:30, 15:00, 15:30, 16:00, 16:30, 17:00, 17:30" style="top: 45.5%; right: 12%;">
+      <div class="point spectacle" data-img="../shows/philharmagique.webp" data-title="Mickey et son PhilharMagique" data-horaires="12:30, 13:00, 13:30, 14:00, 14:30, 15:00, 15:30, 16:00, 16:30, 17:00, 17:30" style="top: 45.5%; right: 12%;">
         <span class="tooltip">Mickey et son PhilharMagique</span>
+      </div>
+
+      <div class="point spectacle" data-img="../shows/philharmagique.webp" data-title="Disney Performing Arts" data-horaires="Horaires alétoires" style="top: 38%; right: 25%;">
+        <span class="tooltip">Disney Performing Arts</span>
       </div>
 
       <div class="point spectacle" data-img="../shows/roi_lion.jpg" data-title="Le Roi Lion et les Rythmes de la Terre" data-horaires="12:30, 13:30, 16:05, 17:05" style="top: 50%; left: 6%;">
@@ -260,12 +264,12 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
 
 
   <!-- Personnages -->
-  <div class="point personnage" data-img="../images/char1.jpg" data-title="Mickey Mouse" data-horaires="10h-12h et 14h-16h" style="top: 53%; left: 45%;">
+  <div class="point personnage" data-img="../images/char1.jpg" data-title="Pluto" data-horaires="10h-12h et 14h-16h" style="top: 53%; left: 45%;">
     <span class="tooltip">Pluto</span>
   </div>
 
-  <div class="point personnage" data-img="../images/char2.jpg" data-title="Winnie ou ses Amis" data-horaires="11h-13h et 15h-17h" style="bottom: 29%; left: 42.5%;">
-    <span class="tooltip">Winnie ou ses Amis</span>
+  <div class="point personnage" data-img="../images/char2.jpg" data-title="Max" data-horaires="11h-13h et 15h-17h" style="bottom: 29%; left: 42.5%;">
+    <span class="tooltip">Max</span>
   </div>
 
   <div class="point personnage" data-img="../images/char3.jpg" data-title="Rencontre Mystérieuse" data-horaires="9h-11h et 13h-15h" style="bottom: 31%; left: 36%;">
@@ -407,16 +411,20 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
       </div>
 
   <!-- Personnages -->
-  <div class="point personnage" data-img="../images/char4.jpg" data-title="Daisy Duck" data-horaires="10h-12h et 14h-16h" style="top: 50%; left: 60%;">
-    <span class="tooltip">Daisy Duck</span>
+  <div class="point personnage" data-img="../images/char4.jpg" data-title="Woody" data-horaires="10:30, 11:00, 11:30, 12:00, 14:30, 15:00, 15:30, 16:00" style="bottom: 37.5%; left: 56%;">
+    <span class="tooltip">Woody</span>
   </div>
 
-  <div class="point personnage" data-img="../images/char5.jpg" data-title="Goofy" data-horaires="11h-13h et 15h-17h" style="top: 55%; left: 30%;">
-    <span class="tooltip">Goofy</span>
+    <div class="point personnage" data-img="../images/char4.jpg" data-title="Nick Wilde" data-horaires="À réserver à 9:45 ou à 14h00" style="bottom: 37.5%; left: 59%;">
+    <span class="tooltip">Nick Wilde</span>
   </div>
 
-  <div class="point personnage" data-img="../images/char6.jpg" data-title="Pluto" data-horaires="9h-11h et 13h-15h" style="top: 40%; left: 70%;">
-    <span class="tooltip">Pluto</span>
+  <div class="point personnage" data-img="../images/char5.jpg" data-title="Jessie" data-horaires="10:30, 11:00, 11:30, 12:00, 12:30, 14:30, 15:00, 15:30, 16:00" style="top: 55%; right: 30%;">
+    <span class="tooltip">Jessie</span>
+  </div>
+
+  <div class="point personnage" data-img="../images/char6.jpg" data-title="Rencontre avec Mickey" data-horaires="10:00, 10:30, 11:00, 11:30, 12:00, 12:30, 13:00, 13:30, 14:00, 14:30, 15:00, 15:30" style="top: 40%; left: 70%;">
+    <span class="tooltip">Rencontre avec Mickey</span>
   </div>
 
 </div>
@@ -726,9 +734,9 @@ document.getElementById('find-nearest-show').addEventListener('click', () => {
 
 renderAllShows();
 
-// Initialize with attractions and Disneyland Park
-showSection('attractions');
-showMap('dlp');
+// Initialize with personnages and Adventure World
+showMap('aw');
+showSection('personnages');
 // Ensure all non-active points are hidden
 document.querySelectorAll('.point').forEach(p => {
     if (p.style.display !== 'block') {

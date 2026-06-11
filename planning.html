@@ -86,10 +86,24 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
             <h3 id="view-date"></h3>
             <div id="view-actions" class="view-actions">
                 <button id="modify-event" class="action-button modify">Modifier</button>
+                <button id="activities-btn" class="action-button activities hidden">Activités</button>
                 <button id="delete-event" class="action-button delete">Supprimer</button>
             </div>
             <div id="view-details-container"></div>
             <button id="switch-to-add" class="link-button">Ajouter un événement</button>
+        </div>
+
+        <div id="modal-activities" class="modal-activities hidden">
+            <h3 id="activities-title">Activités du <span id="activities-date"></span></h3>
+            <div id="activities-list-container"></div>
+            <div id="add-activity-section">
+                <h4>Ajouter une attraction</h4>
+                <select id="activity-select">
+                    <option value="">Sélectionner une attraction...</option>
+                </select>
+                <button id="add-activity-btn">Ajouter</button>
+            </div>
+            <button id="back-to-event" class="link-button">Retour</button>
         </div>
 
         <div id="modal-add" class="modal-add">
@@ -257,9 +271,52 @@ const auth = getAuth(app);
 
 // REF
 const eventsRef = ref(db, 'planning/events');
+const activitiesRef = ref(db, 'planning/activities');
+
+// Liste d'attractions disponibles
+const attractionsDB = {
+  "btm": "Big Thunder Mountain",
+  "space": "Hyperspace Mountain",
+  "indiana_jones": "Indiana Jones",
+  "pirates": "Pirates of the Caribbean",
+  "buzz": "Buzz Lightyear",
+  "dumbo": "Dumbo",
+  "small_world": "It's a Small World",
+  "star_tours": "Star Tours",
+  "flight_force": "Flight Force",
+  "web": "WEB Adventure",
+  "crush_coaster": "Crush Coaster",
+  "frozen": "Frozen Ever After",
+  "peter_pan": "Peter Pan's Flight",
+  "thunder_mesa": "Thunder Mesa Riverboat",
+  "phantom_manor": "Phantom Manor",
+  "mad_hatter_tea_cups": "Mad Hatter's Tea Cups",
+  "casey_jr": "Casey Jr.",
+  "cabane_robinson": "La Cabane des Robinson",
+  "nautilus": "Le Nautilus",
+  "carrousel_lancelot": "Le Carrousel de Lancelot",
+  "autopia": "Autopia",
+  "railroad": "Disneyland Railroad",
+  "pinocchio": "Pinocchio",
+  "orbitron": "Orbitron",
+  "labyrinthe_alice": "Le Labyrinthe d'Alice",
+  "blanche_neige": "Blanche-Neige",
+  "passage_aladdin": "Le Passage Enchanté d'Aladdin",
+  "contes_fees": "Le Pays des Contes de Fées",
+  "tower_terror": "Tower Of Terror",
+  "ratatouille": "Ratatouille",
+  "cars_road_trip": "Cars Road Trip",
+  "cars_quatre_roues": "Cars Quatre Roues Rallye",
+  "tapis_volants": "Les Tapis Volants",
+  "raiponce_spin": "Raiponce Tangled Spin",
+  "rc_racer": "RC Racer",
+  "slinky_dog": "Slinky Dog Zigzag Spin",
+  "toy_soldiers": "Toy Soldiers Parachute Drop"
+};
 
 let currentDate = new Date();
 let events = {};
+let activities = {};
 let selectedDate = null;
 let editingEventId = null;
 
@@ -349,10 +406,14 @@ function showEventView(date) {
     const modal = document.getElementById('event-modal');
     const modalAdd = document.getElementById('modal-add');
     const modalView = document.getElementById('modal-view');
+    const activitiesModal = document.getElementById('modal-activities');
     const viewDate = document.getElementById('view-date');
     const viewDetailsContainer = document.getElementById('view-details-container');
+    const activitiesBtn = document.getElementById('activities-btn');
+    const switchToAddBtn = document.getElementById('switch-to-add');
 
     modalAdd.classList.add('hidden');
+    activitiesModal.classList.add('hidden');
     modalView.classList.remove('hidden');
 
     viewDate.textContent = new Date(date).toLocaleDateString('fr-FR');
@@ -371,6 +432,44 @@ function showEventView(date) {
             </div>
         `;
     }).join('');
+
+    // Afficher le bouton "Activités" et changer le texte du bouton "Ajouter"
+    activitiesBtn.classList.remove('hidden');
+    switchToAddBtn.textContent = 'Ajouter une activité';
+
+    modal.style.display = 'block';
+}
+
+function showActivityView(date) {
+    selectedDate = date;
+    const modal = document.getElementById('event-modal');
+    const activitiesModal = document.getElementById('modal-activities');
+    const modalView = document.getElementById('modal-view');
+    const activitiesDateSpan = document.getElementById('activities-date');
+    const activitiesListContainer = document.getElementById('activities-list-container');
+    const activitySelect = document.getElementById('activity-select');
+
+    modalView.classList.add('hidden');
+    activitiesModal.classList.remove('hidden');
+
+    activitiesDateSpan.textContent = new Date(date).toLocaleDateString('fr-FR');
+
+    // Afficher les activités du jour
+    const dayActivities = (activities[date] || []);
+    activitiesListContainer.innerHTML = dayActivities.length === 0 
+        ? '<p style="color: #999;">Aucune activité pour ce jour</p>'
+        : dayActivities.map((activity, index) => `
+            <div class="activity-item">
+                <span>${attractionsDB[activity] || activity}</span>
+                <button onclick="removeActivity('${date}', ${index})" class="remove-btn">✕</button>
+            </div>
+        `).join('');
+
+    // Remplir le select
+    activitySelect.innerHTML = '<option value="">Sélectionner une attraction...</option>';
+    Object.entries(attractionsDB).forEach(([id, name]) => {
+        activitySelect.innerHTML += `<option value="${id}">${name}</option>`;
+    });
 
     modal.style.display = 'block';
 }
@@ -402,6 +501,43 @@ document.querySelector('.close').addEventListener('click', closeModal);
 document.getElementById('switch-to-add').addEventListener('click', () => {
     showAddView(selectedDate);
 });
+
+document.getElementById('activities-btn').addEventListener('click', () => {
+    showActivityView(selectedDate);
+});
+
+document.getElementById('back-to-event').addEventListener('click', () => {
+    showEventView(selectedDate);
+});
+
+document.getElementById('add-activity-btn').addEventListener('click', async () => {
+    const activitySelect = document.getElementById('activity-select');
+    const attractionId = activitySelect.value;
+
+    if (!attractionId) {
+        alert('Veuillez sélectionner une attraction');
+        return;
+    }
+
+    if (!activities[selectedDate]) {
+        activities[selectedDate] = [];
+    }
+
+    activities[selectedDate].push(attractionId);
+    await set(activitiesRef, activities);
+    showActivityView(selectedDate);
+});
+
+window.removeActivity = async function(date, index) {
+    if (activities[date]) {
+        activities[date].splice(index, 1);
+        if (activities[date].length === 0) {
+            delete activities[date];
+        }
+        await set(activitiesRef, activities);
+        showActivityView(date);
+    }
+};
 
 document.getElementById('modify-event').addEventListener('click', () => {
     if (editingEventId) {
@@ -455,6 +591,10 @@ onAuthStateChanged(auth, (user) => {
     onValue(eventsRef, (snapshot) => {
         events = snapshot.val() || {};
         renderCalendar();
+    });
+
+    onValue(activitiesRef, (snapshot) => {
+        activities = snapshot.val() || {};
     });
 });
 </script>
