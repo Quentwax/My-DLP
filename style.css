@@ -896,7 +896,6 @@ body {
     cursor: default;
 }
 
-/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -906,16 +905,22 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.5);
+    /* allow centered flex layout when shown via inline style (display:flex) */
+    align-items: center;
+    justify-content: center;
+    padding: 20px; /* spacing so modal content can shrink on small screens */
+    overflow-y: auto; /* enable scrolling if content taller than viewport */
 }
 
 .modal-content {
     background-color: white;
-    margin: 15% auto;
     padding: 20px;
     border-radius: 15px;
-    width: 80%;
-    max-width: 500px;
+    width: 90%;
+    max-width: 600px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    max-height: calc(100vh - 40px); /* leave space for padding */
+    overflow-y: auto; /* make inner content scrollable on small screens */
 }
 
 .close {
@@ -1371,7 +1376,6 @@ body {
     display: block;
 }
 
-/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -1381,17 +1385,22 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
 }
 
 .modal-content {
     background-color: white;
-    margin: 15% auto;
     padding: 20px;
     border-radius: 15px;
-    width: 80%;
-    max-width: 500px;
+    width: 90%;
+    max-width: 600px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     text-align: center;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
 }
 
 .close {
@@ -1756,6 +1765,17 @@ body{
     border: 1px solid rgba(93, 55, 166, 0.2);
     border-radius: 8px;
     margin-bottom: 8px;
+    cursor: grab;
+}
+
+.activity-item.dragging {
+    opacity: 0.5;
+}
+
+.activity-item.drag-over {
+    border-color: #5D37A6;
+    box-shadow: inset 0 0 0 2px rgba(93, 55, 166, 0.2);
+    background: #f4edff;
 }
 
 .activity-item span {
@@ -1778,9 +1798,20 @@ body{
     transition: 0.2s;
 }
 
-.remove-btn:hover {
-    background: #ffcdcd;
-    transform: scale(1.1);
+.done-badge,
+.family-badge {
+    display: inline-block;
+    background: #4CAF50;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.family-badge {
+    background: #28a745;
 }
 
 #add-activity-section {
