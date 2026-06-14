@@ -249,6 +249,7 @@ let eventsRef = null;
 let activitiesData = {};
 let eventsData = {};
 let selectedDateForCounter = "global";
+let selectedDoneFilter = "all";
 let dateOptions = [];
 
 // INITIALISER LES DONNÉES
@@ -259,6 +260,29 @@ window.addEventListener("load", () => {
 });
 
 // CHARGER LES ACTIVITÉS EN TEMPS RÉEL
+function normalizeActivityItem(item) {
+  if (typeof item === 'string') return { id: item, family: false };
+  if (item.family !== undefined) return item;
+  if (item.done !== undefined) return { id: item.id, family: false };
+  return { id: item.id, family: false };
+}
+
+function getCountForAttraction(attractionId) {
+  const activitiesList = selectedDateForCounter === "global"
+    ? Object.values(activitiesData).flat()
+    : (activitiesData[selectedDateForCounter] || []);
+
+  return activitiesList
+    .map(normalizeActivityItem)
+    .filter(item => item.id === attractionId)
+    .filter(item => {
+      if (selectedDoneFilter === 'all') return true;
+      if (selectedDoneFilter === 'family') return item.family;
+      if (selectedDoneFilter === 'me') return !item.family;
+      return true;
+    }).length;
+}
+
 function loadActivityCount(attractionId) {
   const countElement = document.getElementById("count-" + attractionId);
   if(!countElement) return;
@@ -269,19 +293,7 @@ function updateActivityCount(attractionId) {
   const countElement = document.getElementById("count-" + attractionId);
   if(!countElement) return;
 
-  let count = 0;
-  
-  if (selectedDateForCounter === "global") {
-    // Compter sur TOUTES les dates
-    Object.values(activitiesData).forEach(dayActivities => {
-      count += (dayActivities || []).filter(id => id === attractionId).length;
-    });
-  } else {
-    // Compter pour la date spécifique
-    const dayActivities = activitiesData[selectedDateForCounter] || [];
-    count = dayActivities.filter(id => id === attractionId).length;
-  }
-  
+  const count = getCountForAttraction(attractionId);
   countElement.innerText = count;
 }
 
@@ -325,7 +337,8 @@ window.addActivityCount = async function(id) {
     activitiesData[selectedDateForCounter] = [];
   }
 
-  activitiesData[selectedDateForCounter].push(id);
+  activitiesData[selectedDateForCounter] = activitiesData[selectedDateForCounter].map(normalizeActivityItem);
+  activitiesData[selectedDateForCounter].push({ id, family: false });
   await set(activitiesRef, activitiesData);
 };
 
@@ -347,7 +360,8 @@ window.removeActivityCount = async function(id) {
     activitiesData[selectedDateForCounter] = [];
   }
 
-  const index = activitiesData[selectedDateForCounter].indexOf(id);
+  const normalized = activitiesData[selectedDateForCounter].map(normalizeActivityItem);
+  const index = normalized.findIndex(item => item.id === id);
   if (index > -1) {
     activitiesData[selectedDateForCounter].splice(index, 1);
   }
@@ -361,6 +375,7 @@ window.changeDateForCounter = function(newDate) {
   attractions.forEach(attraction => {
     updateActivityCount(attraction);
   });
+  filterAttractions();
 };
 
 // FILTRAGE PAR CATÉGORIE ET RECHERCHE
@@ -376,20 +391,31 @@ function filterAttractions() {
     const attractionId = countSpan.id.replace('count-', '');
     const attractionCategory = attractionCategories[attractionId] || 'all';
     const attractionName = row.querySelector('td').textContent.trim().toLowerCase();
+    const attractionCount = getCountForAttraction(attractionId);
 
     const matchesCategory = category === 'all' || attractionCategory === category;
     const matchesSearch = searchText === '' || attractionName.includes(searchText);
+    const matchesDone = selectedDoneFilter === 'all' || attractionCount > 0;
 
-    row.style.display = matchesCategory && matchesSearch ? '' : 'none';
+    row.style.display = matchesCategory && matchesSearch && matchesDone ? '' : 'none';
   });
 }
 
+
 window.addEventListener('load', () => {
   const filterSelect = document.getElementById('filterCategory');
+  const doneFilterSelect = document.getElementById('filterDoneType');
   const searchInput = document.getElementById('searchAttraction');
 
   if (filterSelect) {
     filterSelect.addEventListener('change', filterAttractions);
+  }
+  if (doneFilterSelect) {
+    doneFilterSelect.addEventListener('change', event => {
+      selectedDoneFilter = event.target.value;
+      attractions.forEach(attraction => updateActivityCount(attraction));
+      filterAttractions();
+    });
   }
   if (searchInput) {
     searchInput.addEventListener('input', filterAttractions);
@@ -466,12 +492,18 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
         <option value="walk">Balade à pied</option>
     </select>
 
+    <select id="filterDoneType" style="min-width: 190px;">
+        <option value="all">Tous les états</option>
+        <option value="me">Fait par moi</option>
+        <option value="family">Fait par la famille</option>
+    </select>
+
 </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
         <h1>Parc Principal</h1>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <label for="selected-date-select" style="font-weight: 600;">Période :</label>
+            
             <select id="selected-date-select" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em;" onchange="changeDateForCounter(this.value)">
                 <option value="global">📊 Total global</option>
             </select>

@@ -30,13 +30,7 @@
 
     <a href="pages/sejour.html" class="dropbtn">Checklist</a>
 
-    <div class="dropdown">
-        <div class="dropbtn">🔍</div>
-        <div class="content">
-            <a href="pages/Attractions.html">Attractions</a>
-            <a href="pages/shows.html">Shows</a>
-            <a href="pages/meetings.html">Personnages</a>
-        </div>
+    <a href="pages/recherche.html" class="dropbtn">🔍</a>
     </div>
 
 </header>
@@ -101,6 +95,7 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
                 <select id="activity-select">
                     <option value="">Sélectionner une attraction...</option>
                 </select>
+                <label style="display:block; margin:8px 0; font-weight:600; color:#333;"><input type="checkbox" id="activity-done" style="margin-right:8px;">Fait par ma famille sans moi</label>
                 <button id="add-activity-btn">Ajouter</button>
             </div>
             <button id="back-to-event" class="link-button">Retour</button>
@@ -320,6 +315,13 @@ let activities = {};
 let selectedDate = null;
 let editingEventId = null;
 
+function reorderActivities(date, sourceIndex, targetIndex) {
+    const dayActivities = activities[date];
+    if (!dayActivities || sourceIndex === targetIndex || sourceIndex < 0 || targetIndex < 0) return;
+    const [moved] = dayActivities.splice(sourceIndex, 1);
+    dayActivities.splice(targetIndex, 0, moved);
+}
+
 function getEventsForDate(dateStr) {
     return Object.entries(events).filter(([id, event]) => {
         const start = new Date(event.start);
@@ -397,7 +399,7 @@ function showAddView(date, eventId = null) {
         endDate.value = '';
         eventDetails.value = '';
     }
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
 }
 
 function showEventView(date) {
@@ -437,7 +439,7 @@ function showEventView(date) {
     activitiesBtn.classList.remove('hidden');
     switchToAddBtn.textContent = 'Ajouter une activité';
 
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
 }
 
 function showActivityView(date) {
@@ -455,15 +457,25 @@ function showActivityView(date) {
     activitiesDateSpan.textContent = new Date(date).toLocaleDateString('fr-FR');
 
     // Afficher les activités du jour
-    const dayActivities = (activities[date] || []);
+    const rawDayActivities = (activities[date] || []);
+    const dayActivities = rawDayActivities.map(item => {
+        if (typeof item === 'string') return { id: item, family: false };
+        if (item.family !== undefined) return item;
+        if (item.done !== undefined) return { id: item.id, family: false };
+        return { id: item.id, family: false };
+    });
     activitiesListContainer.innerHTML = dayActivities.length === 0 
         ? '<p style="color: #999;">Aucune activité pour ce jour</p>'
         : dayActivities.map((activity, index) => `
-            <div class="activity-item">
-                <span>${attractionsDB[activity] || activity}</span>
+            <div class="activity-item" draggable="true" data-index="${index}">
+                <span>${attractionsDB[activity.id] || activity.id}${activity.family ? '<span class="family-badge">Famille</span>' : ''}</span>
                 <button onclick="removeActivity('${date}', ${index})" class="remove-btn">✕</button>
             </div>
         `).join('');
+
+    if (dayActivities.length > 0) {
+        addActivityDragHandlers(date);
+    }
 
     // Remplir le select
     activitySelect.innerHTML = '<option value="">Sélectionner une attraction...</option>';
@@ -471,7 +483,42 @@ function showActivityView(date) {
         activitySelect.innerHTML += `<option value="${id}">${name}</option>`;
     });
 
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
+}
+
+function addActivityDragHandlers(date) {
+    document.querySelectorAll('#activities-list-container .activity-item').forEach(item => {
+        item.addEventListener('dragstart', event => {
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', item.dataset.index);
+            item.classList.add('dragging');
+        });
+
+        item.addEventListener('dragend', () => {
+            item.classList.remove('dragging');
+        });
+
+        item.addEventListener('dragover', event => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            item.classList.add('drag-over');
+        });
+
+        item.addEventListener('dragleave', () => {
+            item.classList.remove('drag-over');
+        });
+
+        item.addEventListener('drop', async event => {
+            event.preventDefault();
+            item.classList.remove('drag-over');
+            const sourceIndex = Number(event.dataTransfer.getData('text/plain'));
+            const targetIndex = Number(item.dataset.index);
+            if (isNaN(sourceIndex) || isNaN(targetIndex) || sourceIndex === targetIndex) return;
+            reorderActivities(date, sourceIndex, targetIndex);
+            await set(activitiesRef, activities);
+            showActivityView(date);
+        });
+    });
 }
 
 function openModal(date) {
@@ -513,6 +560,7 @@ document.getElementById('back-to-event').addEventListener('click', () => {
 document.getElementById('add-activity-btn').addEventListener('click', async () => {
     const activitySelect = document.getElementById('activity-select');
     const attractionId = activitySelect.value;
+    const familyChecked = document.getElementById('activity-done').checked;
 
     if (!attractionId) {
         alert('Veuillez sélectionner une attraction');
@@ -523,7 +571,15 @@ document.getElementById('add-activity-btn').addEventListener('click', async () =
         activities[selectedDate] = [];
     }
 
-    activities[selectedDate].push(attractionId);
+    // Normalize existing items to objects {id, family}
+    activities[selectedDate] = activities[selectedDate].map(item => {
+        if (typeof item === 'string') return { id: item, family: false };
+        if (item.family !== undefined) return item;
+        if (item.done !== undefined) return { id: item.id, family: false };
+        return { id: item.id, family: false };
+    });
+
+    activities[selectedDate].push({ id: attractionId, family: familyChecked });
     await set(activitiesRef, activities);
     showActivityView(selectedDate);
 });
