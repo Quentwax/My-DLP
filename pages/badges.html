@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>My Disneyland Paris - Badges</title>
+<link rel="icon" href="../favicon2.png">
+<link href="../style.css" rel="stylesheet" />
+
+<!-- Firebase Auth -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBb-2GlOsnUDzDXZ8-mgd6XIr8ny4ZkJoo",
+  authDomain: "my-disneyland-paris.firebaseapp.com",
+  databaseURL: "https://my-disneyland-paris-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "my-disneyland-paris",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+window.login = function () {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      console.log("SUCCESS", result.user);
+    })
+    .catch((error) => {
+      console.error("ERROR", error);
+      alert(error.message);
+    });
+};
+
+onAuthStateChanged(auth, (user) => {
+  const btn = document.querySelector("#authBtn");
+
+  if (!btn) return;
+
+  if (user) {
+    btn.textContent = "Se déconnecter (" + user.email + ")";
+    btn.onclick = () => auth.signOut();
+  } else {
+    btn.textContent = "Se connecter";
+    btn.onclick = login;
+  }
+});
+</script>
+
+</head>
+
+<body>
+
+<header class="nav">
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+
+    <div class="dropdown">
+        <div class="dropbtn">Collections</div>
+        <div class="content">
+            <a href="collection.html">Pins</a>
+            <a href="piece.html">Pièces</a>
+            <a href="figurines.html">Figurines</a>
+            <a href="lorcana.html">Lorcana</a>
+        </div>
+    </div>
+
+    <a href="planning.html" class="dropbtn">Planning</a>
+    <a href="checklist.html" class="dropbtn">Checklist</a>
+    <a href="numb_coaster.html" class="dropbtn">Attractions</a>
+    <a href="recherche.html" class="dropbtn">🔍</a>
+</header>
+
+<button id="authBtn" onclick="login()">Se connecter</button>
+
+<h1 class="titre">🏆 Mes Badges</h1>
+
+<!-- PROGRESSION -->
+<div class="badge-dashboard">
+
+    <!-- Progression générale -->
+
+    <div class="badge-progress">
+
+        <h2>🏆 Progression globale</h2>
+
+        <div class="badge-progress-bar">
+            <div id="progress-fill" class="badge-progress-fill"></div>
+        </div>
+
+        <p id="progress-text">
+            0 / 75 badges débloqués
+        </p>
+
+    </div>
+
+    <!-- MENU PRINCIPAL -->
+
+    <div id="badge-home">
+
+        <div class="badge-category" data-category="attractions">
+            <img src="../badges/btm.png">
+            <h3>🎢 Attractions</h3>
+        </div>
+
+        <div class="badge-category" data-category="shows">
+            <img src="../badges/shows.png">
+            <h3>🎭 Spectacles</h3>
+        </div>
+
+        <div class="badge-category" data-category="restaurants">
+            <img src="../badges/walts.png">
+            <h3>🍽 Restaurants</h3>
+        </div>
+
+        <div class="badge-category" data-category="lands">
+            <img src="../badges/lands.png">
+            <h3>🏰 Lands</h3>
+        </div>
+
+        <div class="badge-category" data-category="events">
+            <img src="../badges/events.png">
+            <h3>Évènements</h3>
+        </div>
+
+    </div>
+
+    <!-- PAGE D'UNE CATEGORIE -->
+
+    <div id="badge-category-page" class="hidden">
+
+        <button id="back-button">
+            ←
+        </button>
+
+        <h2 id="category-title"></h2>
+
+        <div class="badge-grid" id="badge-grid">
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- SCRIPT LOGIQUE BADGES -->
+<script type="module" src="badges.js"></script>
+
+</body>
+</html>

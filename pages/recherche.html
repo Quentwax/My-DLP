@@ -127,6 +127,7 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
         <button id="btn-attractions" class="filter-btn active">Attractions</button>
         <button id="btn-spectacles" class="filter-btn">Spectacles</button>
         <button id="btn-personnages" class="filter-btn">Personnages</button>
+        <button id="btn-restaurants" class="filter-btn">Restaurants</button>
     </div>
 
     <div class="search-wrapper">
@@ -308,7 +309,58 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <span class="tooltip">Star Port</span>
   </div>
 
+  <!-- Restaurants -->
+    <div class="point restaurant" data-img="../restaurants/captain_jacks.jpg" data-title="Captain Jack's" style="top: 10%; left: 33%;">
+        <span class="tooltip">Captain Jack's</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/walts.jpg" data-title="Walt's - An American Restaurant" style="top:15%; left:45%;">
+        <span class="tooltip">Walt's - An American Restaurant</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/plaza_gardens.jpg" data-title="Plaza Gardens Restaurant" style="top:20%; left:50%;">
+        <span class="tooltip">Plaza Gardens Restaurant</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/caseys_corner.jpg" data-title="Casey's Corner" style="top:25%; left:55%;">
+        <span class="tooltip">Casey's Corner</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/bella_notte.jpg" data-title="Pizzeria Bella Notte" style="top:24%; left:65%;">
+        <span class="tooltip">Pizzeria Bella Notte</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/chalet_marionnette.jpg" data-title="Au Chalet de la Marionnette" style="top:35%; left:65%;">
+        <span class="tooltip">Au Chalet de la Marionnette</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/colonel_hathi.jpg" data-title="Colonel Hathi's Pizza Outpost" style="top:40%; left:70%;">
+        <span class="tooltip">Colonel Hathi's Pizza Outpost</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/hakuna_matata.jpg" data-title="Restaurant Hakuna Matata" style="top:45%; left:75%;">
+        <span class="tooltip">Restaurant Hakuna Matata</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/agrabah.jpg" data-title="Agrabah Café Restaurant" style="top:50%; left:20%;">
+        <span class="tooltip">Agrabah Café Restaurant</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/casa_de_coco.jpg" data-title="Casa de Coco" style="top:42%; left:28%;">
+        <span class="tooltip">Casa de Coco</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/silver_spur.jpg" data-title="Silver Spur Steakhouse" style="top:62%; left:39.5%;">
+        <span class="tooltip">Silver Spur Steakhouse</span>
+    </div>
+
+    <div class="point restaurant" data-img="../restaurants/lucky_nugget.jpg" data-title="Lucky Nugget Saloon" style="top:56%; left:39.5%;">
+        <span class="tooltip">Lucky Nugget Saloon</span>
+    </div>
+
+
 </div>
+
 </div>
 
 
@@ -427,25 +479,56 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <span class="tooltip">Rencontre avec Mickey</span>
   </div>
 
+Restaurants
+
+<div class="point restaurant" data-img="../restaurants/bistrot_remy.jpg" data-title="Bistrot Chez Rémy" style="top:20%; left:20%;">
+    <span class="tooltip">Bistrot Chez Rémy</span>
+</div>
+
+<div class="point restaurant" data-img="../restaurants/pym_kitchen.jpg" data-title="PYM Kitchen" style="top:25%; left:25%;">
+    <span class="tooltip">PYM Kitchen</span>
+</div>
+
+<div class="point restaurant" data-img="../restaurants/stark_factory.jpg" data-title="Stark Factory" style="top:30%; left:30%;">
+    <span class="tooltip">Stark Factory</span>
+</div>
+
+<div class="point restaurant" data-img="../restaurants/super_diner.jpg" data-title="Super Diner" style="top:35%; left:35%;">
+    <span class="tooltip">Super Diner</span>
+</div>
+
+<div class="point restaurant" data-img="../restaurants/laugh_n_go.jpg" data-title="Laugh'n Go!" style="top:40%; left:40%;">
+    <span class="tooltip">Laugh'n Go!</span>
+</div>
+
+<div class="point restaurant" data-img="../restaurants/hollywood_gardens.jpg" data-title="The Hollywood Gardens Restaurant" style="top:45%; left:45%;">
+    <span class="tooltip">The Hollywood Gardens Restaurant</span>
+</div>
+
+<div class="point restaurant" data-img="../restaurants/overland_trail.jpg" data-title="Overland Trail Café" style="top:50%; left:50%;">
+    <span class="tooltip">Overland Trail Café</span>
+</div>
+
 </div>
 </div>
 
 <script>
-// LISTE PRÉDÉFINIE
+// LISTE PRÉDÉFINIE (ajouter les noms des attractions, spectacles, personnages et restaurants)
 const attractions = ["Big Thunder Mountain", "Pirates of the Caribbean", "Star Wars Hyperspace Mountain", "Star Tours", "Buzz Lightyear Laser Blast", "Orbitron", "Les mystères du Nautilus", "Autopia", "Phantom Manor", "It's a Small World", "Indiana Jones", "Dumbo", "Peter Pan", "Mad Hatter's Tea Cups", "Casey Jr.", "Le pays des contes de fées", "Pinocchio", "Blanche Neige", "Le labyrinthe d'Alice", "Tower Of Terror", "W.E.B Adventure", "Flight Force", "Crush Coaster", "Cars Quatre Roues Rallye", "Zig Zag", "Ratatouille", "RC Racer", "Raiponce Tangled Spin", "Parachute Drop", "Cars Road Trip", "Les Tapis Volants", "Frozen Ever After"];
 const spectacles = ["Disney Stars on Parade", "Disney Tales of Magic", "A Million Splashes Of Colour", "Mickey et son PhilharMagique", "Le Roi Lion et les Rythmes de la Terre", "Together", "La Fabrique des Rêves de Minnie", "Stitch Live !", "Célébration à Arendelle", "Cascade Of Lights", "La Fanfare de Minnie", "Moment Musical avec Raiponce et Flynn", "Mickey et le Magicien", "Animation Academy"];
 const personnages = ["Pluto", "Winnie ou ses Amis", "Rencontre Mystérieuse", "Dingo Cowboy", "Personnage Le Roi Lion", "Baloo", "Personnage Aladdin", "Rencontre avec Mickey", "Pavillon des Princesses", "Daisy Duck", "Woody", "Nick Wilde", "Jessie", "Rencontre avec Mickey"];
-
+const restaurants = ["Captain Jack's","Plaza Gardens","Walt's","Agrabah Café","Colonel Hathi's Pizza Outpost","Casey's Corner"];
 const allItems = [
     ...attractions.map(name => ({ name, category: 'attractions' })),
     ...spectacles.map(name => ({ name, category: 'spectacles' })),
-    ...personnages.map(name => ({ name, category: 'personnages' }))
+    ...personnages.map(name => ({ name, category: 'personnages' })),
+    ...restaurants.map(name => ({ name, category: 'restaurants' }))
 ];
 
 document.getElementById('btn-attractions').addEventListener('click', () => showSection('attractions'));
 document.getElementById('btn-spectacles').addEventListener('click', () => showSection('spectacles'));
 document.getElementById('btn-personnages').addEventListener('click', () => showSection('personnages'));
-
+document.getElementById('btn-restaurants').addEventListener('click', () => showSection('restaurants'));
 document.getElementById('map-dlp-btn').addEventListener('click', () => showMap('dlp'));
 document.getElementById('map-aw-btn').addEventListener('click', () => showMap('aw'));
 
@@ -532,7 +615,20 @@ function showSection(section) {
     document.querySelectorAll('.point').forEach(p => p.style.display = 'none');
 
     // Show points for the section only on the active map
-    let className = section === 'attractions' ? 'attraction' : section === 'spectacles' ? 'spectacle' : 'personnage';
+let className;
+
+if (section === 'attractions') {
+    className = 'attraction';
+}
+else if (section === 'spectacles') {
+    className = 'spectacle';
+}
+else if (section === 'personnages') {
+    className = 'personnage';
+}
+else if (section === 'restaurants') {
+    className = 'restaurant';
+}
     const activeMap = document.querySelector('.map-container.active');
     if (activeMap) {
         const points = activeMap.querySelectorAll('.point.' + className);
@@ -662,7 +758,7 @@ function showNearestShowResult(show, position) {
 function showNearestShowError(message) {
     const result = document.getElementById('nearest-show-output');
     result.innerHTML = `<strong>Erreur :</strong> ${message}`;
-    document.getElementById('nearest-show-modal').style.display = 'block';
+    document.getElementById('nearest-show-modal').style.display = 'flex';
 }
 
 function getNext3Times(horaires) {
@@ -723,7 +819,7 @@ document.getElementById('find-nearest-show').addEventListener('click', () => {
         position => {
             const nearest = findNearestUpcomingShow(position);
             showNearestShowResult(nearest, position);
-            document.getElementById('nearest-show-modal').style.display = 'block';
+            document.getElementById('nearest-show-modal').style.display = 'flex';
         },
         error => {
             showNearestShowError('Accès à la géolocalisation refusé ou impossible.');
@@ -769,7 +865,7 @@ function openModal(img, title, horaires) {
     document.getElementById('modal-img').src = img;
     document.getElementById('modal-title').textContent = title;
     document.getElementById('modal-horaires').textContent = 'Horaires : ' + horaires;
-    document.getElementById('modal').style.display = 'block';
+    document.getElementById('modal').style.display = 'flex';
 }
 
 document.querySelectorAll('.close').forEach(closeBtn => {

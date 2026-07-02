@@ -306,7 +306,8 @@ function updateDateSelect() {
   const datesWithEvents = Object.keys(eventsData || {}).filter(eventId => {
     const event = eventsData[eventId];
     return event && event.start;
-  }).map(eventId => eventsData[eventId].start).filter((v, i, a) => a.indexOf(v) === i).sort();
+  }).map(eventId => eventsData[eventId].start).filter((v, i, a) => a.indexOf(v) === i)
+    .sort((a, b) => b.localeCompare(a));
 
   // Reconstruire le select
   dateSelect.innerHTML = '<option value="global">📊 Total global</option>';
@@ -492,7 +493,7 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
         <option value="walk">Balade à pied</option>
     </select>
 
-    <select id="filterDoneType" style="min-width: 190px;">
+    <select id="filterDoneType">
         <option value="all">Tous les états</option>
         <option value="me">Fait par moi</option>
         <option value="family">Fait par la famille</option>

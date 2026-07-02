@@ -28,7 +28,7 @@
 
     <a href="pages/piece.html" class="dropbtn">Pièces</a>
 
-    <a href="pages/sejour.html" class="dropbtn">Checklist</a>
+    <a href="pages/checklist.html" class="dropbtn">Checklist</a>
 
     <a href="pages/recherche.html" class="dropbtn">🔍</a>
     </div>
@@ -309,6 +309,53 @@ const attractionsDB = {
   "toy_soldiers": "Toy Soldiers Parachute Drop"
 };
 
+// Liste des restaurants
+const restaurantsDB = {
+  "lucky_nugget": "The Lucky Nugget Saloon",
+  "chez_remy": "Bistrot Chez Rémy",
+  "captain_jack": "Captain Jack's",
+  "annette": "Annette's Diner",
+  "plaza_gardens": "Plaza Gardens Restaurant",
+  "hakuna_matata": "Hakuna Matata Restaurant",
+  "auberge_cendrillon": "Auberge de Cendrillon",
+  "casa_coco": "Casa de Coco",
+  "cowboy_cookout": "Cowboy Cookout Barbecue",
+  "silver_spur": "Silver Spur Steakhouse",
+  "colonel_hathi": "Colonel Hathi's Outpost",
+  "chalet_marionnette": "Au Chalet de la Marionnette",
+  "toad_hall": "Toad Hall Restaurant",
+  "agrabah_cafe": "Agrabah Café",
+  "plaza_gardens": "Plaza Gardens Restaurant",
+  "bella_notte": "Pizzeria Bella Notte",
+  "cafe_hyperion": "Café Hyperion",
+  "casey": "Casey's Corner",
+  "walt": "Walt's",
+  "hollywood_gardens": "Hollywood Gardens",
+  "pym": "PYM Kitchen",
+  "plaza_gardens": "Plaza Gardens Restaurant",
+  "stark_factory": "Stark Factory",
+  "super_diner": "Super Diner",
+  "regal_view": "The Regal View",
+  "nordic_crowns_tavern": "Nordic Crowns Tavern",
+  "terasse_panoramique": "La Terrasse Panoramique",
+
+};
+
+const showsDB = {
+  "roi_lion": "Le Roi Lion et les Rythmes de la Terre",
+  "together": "Together",
+  "stars_on_parade": "Stars on Parade",
+  "dreams_factory": "La Fabrique des Rêves de Minnie",
+  "mickey_magicien": "Mickey et le Magicien",
+  "cascade_of_lights": "Cascade Of Lights",
+  "tales_of_magic": "Tales of Magic",
+  "philarmagique": "Mickey et son Orchestre Philharmagique",
+  "splashes_of_colour": "A Million Splashes of Colour",
+  "animation_academy": "Animation Academy",
+  "celebration_arendelle": "Célébration à Arendelle",
+  "stitch_live": "Stitch Live !",
+};
+
 let currentDate = new Date();
 let events = {};
 let activities = {};
@@ -443,13 +490,15 @@ function showEventView(date) {
 }
 
 function showActivityView(date) {
+    const activitySelect = document.getElementById('activity-select');
     selectedDate = date;
+    const activitiesDB = { attractions: attractionsDB, shows: showsDB, restaurants: restaurantsDB};
     const modal = document.getElementById('event-modal');
     const activitiesModal = document.getElementById('modal-activities');
     const modalView = document.getElementById('modal-view');
     const activitiesDateSpan = document.getElementById('activities-date');
     const activitiesListContainer = document.getElementById('activities-list-container');
-    const activitySelect = document.getElementById('activity-select');
+    
 
     modalView.classList.add('hidden');
     activitiesModal.classList.remove('hidden');
@@ -457,18 +506,26 @@ function showActivityView(date) {
     activitiesDateSpan.textContent = new Date(date).toLocaleDateString('fr-FR');
 
     // Afficher les activités du jour
-    const rawDayActivities = (activities[date] || []);
-    const dayActivities = rawDayActivities.map(item => {
-        if (typeof item === 'string') return { id: item, family: false };
-        if (item.family !== undefined) return item;
-        if (item.done !== undefined) return { id: item.id, family: false };
-        return { id: item.id, family: false };
-    });
+   const dayActivities = (activities[date] || []).map(item => {
+    if (typeof item === "string") {
+        return {
+            id: item,
+            category: "attractions",
+            family: false
+        };
+    }
+
+    return {
+        id: item.id,
+        category: item.category || "attractions",
+        family: item.family || false
+    };
+});
     activitiesListContainer.innerHTML = dayActivities.length === 0 
         ? '<p style="color: #999;">Aucune activité pour ce jour</p>'
         : dayActivities.map((activity, index) => `
             <div class="activity-item" draggable="true" data-index="${index}">
-                <span>${attractionsDB[activity.id] || activity.id}${activity.family ? '<span class="family-badge">Famille</span>' : ''}</span>
+                <span>${(activitiesDB[activity.category]?.[activity.id]) || activity.id}${activity.family ? '<span class="family-badge">Famille</span>' : ''}</span>
                 <button onclick="removeActivity('${date}', ${index})" class="remove-btn">✕</button>
             </div>
         `).join('');
@@ -479,13 +536,20 @@ function showActivityView(date) {
 
     // Remplir le select
     activitySelect.innerHTML = '<option value="">Sélectionner une attraction...</option>';
-    Object.entries(attractionsDB).forEach(([id, name]) => {
-        activitySelect.innerHTML += `<option value="${id}">${name}</option>`;
+    for (const [category, list] of Object.entries(activitiesDB)) {
+    const optgroup = document.createElement("optgroup");
+    optgroup.label = category.toUpperCase();
+
+    Object.entries(list).forEach(([id, name]) => {
+        const option = document.createElement("option");
+        option.value = `${category}:${id}`;
+        option.textContent = name;
+        optgroup.appendChild(option);
     });
 
-    modal.style.display = 'flex';
+    activitySelect.appendChild(optgroup);
 }
-
+}
 function addActivityDragHandlers(date) {
     document.querySelectorAll('#activities-list-container .activity-item').forEach(item => {
         item.addEventListener('dragstart', event => {
@@ -559,11 +623,12 @@ document.getElementById('back-to-event').addEventListener('click', () => {
 
 document.getElementById('add-activity-btn').addEventListener('click', async () => {
     const activitySelect = document.getElementById('activity-select');
-    const attractionId = activitySelect.value;
+    const selectedValue = activitySelect.value;
+    const [category, id] = selectedValue.split(":");
     const familyChecked = document.getElementById('activity-done').checked;
 
-    if (!attractionId) {
-        alert('Veuillez sélectionner une attraction');
+    if (!category || !id) {
+        alert('Veuillez sélectionner une activité');
         return;
     }
 
@@ -571,15 +636,17 @@ document.getElementById('add-activity-btn').addEventListener('click', async () =
         activities[selectedDate] = [];
     }
 
-    // Normalize existing items to objects {id, family}
     activities[selectedDate] = activities[selectedDate].map(item => {
-        if (typeof item === 'string') return { id: item, family: false };
-        if (item.family !== undefined) return item;
-        if (item.done !== undefined) return { id: item.id, family: false };
-        return { id: item.id, family: false };
+        if (typeof item === 'string') return { id: item, category: "attractions", family: false };
+        return item;
     });
 
-    activities[selectedDate].push({ id: attractionId, family: familyChecked });
+    activities[selectedDate].push({
+    id,
+    category,
+    family: familyChecked
+});
+
     await set(activitiesRef, activities);
     showActivityView(selectedDate);
 });

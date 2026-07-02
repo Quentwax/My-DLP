@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Pin's du Mois</title>
+<title>Collection Figurines</title>
 <link rel="icon" href="../favicon.png">
 <link href="../style.css" rel="stylesheet" />
 </head>
@@ -12,55 +12,57 @@
 <body>
 
 <header class="nav">
-
     <a href="../index.html" class="logo">✨ Disneyland</a>
-
     <a href="collection.html" class="dropbtn">Collection Pin's</a>
     <a href="pin's.html" class="dropbtn">Pin's du Mois</a>
     <a href="last_months.html" class="dropbtn">Anciens Pin's</a>
+    <a href="figurines.html" class="dropbtn">Figurines</a>
 </header>
 
-<h1 class="titre">Anciens Pin's</h1>
+<h1 class="titre">Collection de Figurines</h1>
 
 
-
-<script>
-document.querySelectorAll(".dropbtn").forEach(btn => {
-    btn.addEventListener("click", () => {
-
-        let content = btn.nextElementSibling;
-
-        // Ferme les autres menus
-        document.querySelectorAll(".content").forEach(menu => {
-            if(menu !== content) menu.classList.remove("open");
-        });
-
-        content.classList.toggle("open");
-    });
-});
-</script>
 <div class="boxcontainer">
-<div class="map-box">
-    <img class="map" src="../pins06_2026.jpg" alt="Pins Juin 2026">
-    <img class="map" src="../pins05_2026.jpg" alt="Pins Mai 2026">
-    <img class="map" src="../pins04_2026.jpg" alt="Pins Avril 2026">
-    <img class="map" src="../pins03_2026.jpg" alt="Pins Mars 2026">
-    <img class="map" style="margin-top: 60px;" src="../pins03_2026_adventureland.jpg" alt="Pins Mars Adventure World 2026">
+    <div class="pin-box" style="background: linear-gradient(135deg, #004aad, #cb6ce6);">
+        <img class="pin-collection" src="../figurines/yzma_&_kronk.png" alt="Figurine Yzma et Kronk">
+        <img class="pin-collection" src="../figurines/aurore.png" alt="Figurine Aurore">
+        <img class="pin-collection" src="../figurines/boule_mickey_fantasia.png" alt="Figurine boule Mickey Fantasia">
+        <img class="pin-collection" src="../figurines/boule_winnie_&amp;_tigrou.png" alt="Figurine boule Winnie et Tigrou">
+        <img class="pin-collection" src="../figurines/mickey_baguette.png" alt="Figurine Mickey baguette">
+        <img class="pin-collection" src="../figurines/mickey_fantasia.png" alt="Figurine Mickey Fantasia">
+        <img class="pin-collection" src="../figurines/mushu.png" alt="Figurine Mushu">
+        <img class="pin-collection" src="../figurines/olaf.png" alt="Figurine Olaf">
+        <img class="pin-collection" src="../figurines/picsou.png" alt="Figurine Picsou">
+        <img class="pin-collection" src="../figurines/raiponce.png" alt="Figurine Raiponce">
+        <img class="pin-collection" src="../figurines/remy.png" alt="Figurine Rémy">
+        <img class="pin-collection" src="../figurines/stitch.png" alt="Figurine Stitch">
+        <img class="pin-collection" src="../figurines/tic_&amp;_tac_horloge.png" alt="Figurine Tic et Tac horloge">
+        <img class="pin-collection" src="../figurines/tigrou_petit_gourou.png" alt="Figurine Tigrou petit gourou">
+    </div>
 </div>
- </div>
 
 <audio id="music" src="../Kingdom Dance (From TangledScore).mp3" loop></audio>
+
+<!-- Menu de contrôle de la musique -->
+<div id="music-floating-btn">🎵</div>
+<div id="music-controls" class="hidden">
+    <button id="play-pause-btn">⏸️</button>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+</div>
+
 <script>
 const music = document.getElementById("music");
+const playPauseBtn = document.getElementById("play-pause-btn");
+const volumeSlider = document.getElementById("volume-slider");
+const floatingBtn = document.getElementById("music-floating-btn");
+const controls = document.getElementById("music-controls");
 
 window.addEventListener("load", () => {
-    // RESTAURER LE TEMPS
     let time = parseFloat(localStorage.getItem("musicTime"));
     if (!isNaN(time)) {
         music.currentTime = time;
     }
 
-    // RESTAURER LE VOLUME
     let savedVolume = parseFloat(localStorage.getItem("musicVolume"));
     if (!isNaN(savedVolume)) {
         music.volume = savedVolume;
@@ -70,13 +72,11 @@ window.addEventListener("load", () => {
         volumeSlider.value = 0.5;
     }
 
-    // RESTAURER L'ÉTAT DE LECTURE
     let wasPlaying = localStorage.getItem("musicPlaying") === "true";
     if (wasPlaying) {
         let promise = music.play();
         if (promise !== undefined) {
             promise.catch(() => {
-                // Navigation inter-pages peut empêcher autoplay sans interaction utilisateur
                 console.log("Lecture automatique bloquée, appuyez sur Play.");
             });
         }
@@ -87,39 +87,18 @@ window.addEventListener("load", () => {
     playPauseBtn.textContent = music.paused ? "▶️" : "⏸️";
 });
 
-/* SAUVEGARDER EN CONTINU */
 setInterval(() => {
     localStorage.setItem("musicTime", music.currentTime);
 }, 500);
-</script>
-<script>
+
 window.addEventListener("beforeunload", () => {
     localStorage.setItem("musicTime", music.currentTime);
 });
-</script>
 
-<!-- Menu de contrôle de la musique -->
-<div id="music-floating-btn">🎵</div>
-<div id="music-controls" class="hidden">
-    <button id="play-pause-btn">⏸️</button>
-    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
-</div>
-
-<script>
-const playPauseBtn = document.getElementById("play-pause-btn");
-const volumeSlider = document.getElementById("volume-slider");
-const floatingBtn = document.getElementById("music-floating-btn");
-const controls = document.getElementById("music-controls");
-
-// Initialiser le volume au chargement (sera écrasé par la restauration ci-dessus)
-music.volume = 0.5;
-
-// Toggle contrôle
 floatingBtn.addEventListener("click", () => {
     controls.classList.toggle("hidden");
 });
 
-// Lecture/pause
 playPauseBtn.addEventListener("click", () => {
     if (music.paused) {
         music.play();
@@ -132,19 +111,16 @@ playPauseBtn.addEventListener("click", () => {
     }
 });
 
-// Slider volume
 volumeSlider.addEventListener("input", () => {
     music.volume = parseFloat(volumeSlider.value);
     localStorage.setItem("musicVolume", music.volume.toString());
 });
 
-// Mettre à jour l'icône quand la musique se termine
 music.addEventListener("ended", () => {
     playPauseBtn.textContent = "▶️";
     localStorage.setItem("musicPlaying", "false");
 });
 
-// Sauvegarder le statut lors de changement immédiat
 music.addEventListener("pause", () => {
     localStorage.setItem("musicPlaying", "false");
 });
@@ -155,8 +131,4 @@ music.addEventListener("play", () => {
 </script>
 
 </body>
-
-
-
 </html>
-
