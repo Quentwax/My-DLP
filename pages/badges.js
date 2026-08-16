@@ -116,7 +116,7 @@ const badges = [
     { id: "adventureland", category: "lands", name: "Adventureland", image: "adventureland.png" },
     { id: "fantasyland", category: "lands", name: "Fantasyland", image: "fantasyland.png" },
     { id: "discoveryland", category: "lands", name: "Discoveryland", image: "discoveryland.png" },
-    { id: "mainStreet", category: "lands", name: "Main Street", image: "mainstreet.png" },
+    { id: "mainStreet", category: "lands", name: "Main Street", image: "main_street.png" },
     { id: "world_premiere", category: "lands", name: "World Premiere", image: "world_premiere.png" },
     { id: "avengers_campus", category: "lands", name: "Avengers Campus", image: "avengers_campus.png" },
     { id: "world_of_pixar", category: "lands", name: "World of Pixar", image: "world_of_pixar.png" },
@@ -130,8 +130,8 @@ const badges = [
 
     { id: "birthday", category: "events", name: "Joyeux anniversaire !", image: "birthday.png" },
     { id: "ete", category: "events", name: "EN ÉTÉÉÉÉ !", image: "summer.png" },
-    { id: "hiver", category: "events", name: "Fais frisquet", image: "hiver.png" },
     { id: "halloween", category: "events", name: "Halloween", image: "halloween.png" },
+    { id: "hiver", category: "events", name: "Fais frisquet", image: "hiver.png" },
 
 ];
 
@@ -277,16 +277,21 @@ function isBadgeUnlocked(badge, activities, events) {
             case "ete":
                 return month >= 6 && month <= 9;
 
-            case "hiver":
-                return month === 12 || month <= 2;
+            case "noel":
+             return Object.values(events).some(e =>
+                e.details?.toLowerCase().includes("noël") ||
+                e.details?.toLowerCase().includes("noel")  );    
 
             case "halloween":
-                return month === 10;
+             return Object.values(events).some(e =>
+                 e.details?.toLowerCase().includes("halloween"));    
 
             default:
                 return false;
         }
     }
+
+    
 
     // Tous les autres badges
     return hasDone(activities, badge.id);
