@@ -241,6 +241,23 @@ window.addEventListener("load", () => {
     margin-bottom: 15px;
 }
 
+.playmat-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 320px));
+}
+
+.playmat-grid img {
+    width: 100%;
+    aspect-ratio: 1.6;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    transition: 0.2s;
+}
+
+.playmat-grid img:hover {
+    transform: scale(1.03);
+}
+
 .check {
     display: flex;
     align-items: center;
@@ -265,7 +282,7 @@ window.addEventListener("load", () => {
 
     
 
-    <a href="pin's.html" class="dropbtn">Pins</a>
+    <a href="collection.html" class="dropbtn">Pins</a>
 
     <a href="piece.html" class="dropbtn">Pièces</a>
 
@@ -275,6 +292,27 @@ window.addEventListener("load", () => {
 
 </header>
 
+
+<h1 class="titre">🃏 Mes Playmat 🃏</h1>
+<div class="collection playmat-grid">
+    <img src="../playmat/ariel.webp" alt="Playmat Ariel">
+    <img src="../playmat/belle.webp" alt="Playmat Belle">
+    <img src="../playmat/big_heroes_6.webp" alt="Playmat Big Hero 6">
+    <img src="../playmat/cendrillon.webp" alt="Playmat Cendrillon">
+    <img src="../playmat/donald.webp" alt="Playmat Donald">
+    <img src="../playmat/elsa.webp" alt="Playmat Elsa">
+    <img src="../playmat/encanto.webp" alt="Playmat Encanto">
+    <img src="../playmat/hades.webp" alt="Playmat Hadès">
+    <img src="../playmat/jasmine.webp" alt="Playmat Jasmine">
+    <img src="../playmat/mickey.webp" alt="Playmat Mickey">
+    <img src="../playmat/mufasa.webp" alt="Playmat Mufasa">
+    <img src="../playmat/raiponce.webp" alt="Playmat Raiponce">
+    <img src="../playmat/steamboat_wilie.webp" alt="Playmat Steamboat Willie">
+    <img src="../playmat/tic&amp;tac.webp" alt="Playmat Tic et Tac">
+    <img src="../playmat/tigrou.webp" alt="Playmat Tigrou">
+    <img src="../playmat/vaiana.webp" alt="Playmat Vaiana">
+    <img src="../playmat/winnie.webp" alt="Playmat Winnie">
+</div>
 
 <h1 class="titre">🖋️ Cartes Signées 🖋️</h1>
 <div class="collection" id="collection-checked"></div>

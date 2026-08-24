@@ -314,15 +314,15 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
         <span class="tooltip">Captain Jack's</span>
     </div>
 
-    <div class="point restaurant" data-img="../restaurants/walts.jpg" data-title="Walt's - An American Restaurant" style="top:15%; left:45%;">
+    <div class="point restaurant" data-img="../restaurants/walts.jpg" data-title="Walt's - An American Restaurant" style="top:60%; left:48%;">
         <span class="tooltip">Walt's - An American Restaurant</span>
     </div>
 
-    <div class="point restaurant" data-img="../restaurants/plaza_gardens.jpg" data-title="Plaza Gardens Restaurant" style="top:20%; left:50%;">
+    <div class="point restaurant" data-img="../restaurants/plaza_gardens.jpg" data-title="Plaza Gardens Restaurant" style="top:52%; left:58%;">
         <span class="tooltip">Plaza Gardens Restaurant</span>
     </div>
 
-    <div class="point restaurant" data-img="../restaurants/caseys_corner.jpg" data-title="Casey's Corner" style="top:25%; left:55%;">
+    <div class="point restaurant" data-img="../restaurants/caseys_corner.jpg" data-title="Casey's Corner" style="top:56%; left:48%;">
         <span class="tooltip">Casey's Corner</span>
     </div>
 
@@ -330,19 +330,19 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
         <span class="tooltip">Pizzeria Bella Notte</span>
     </div>
 
-    <div class="point restaurant" data-img="../restaurants/chalet_marionnette.jpg" data-title="Au Chalet de la Marionnette" style="top:35%; left:65%;">
+    <div class="point restaurant" data-img="../restaurants/chalet_marionnette.jpg" data-title="Au Chalet de la Marionnette" style="top:21%; left:43%;">
         <span class="tooltip">Au Chalet de la Marionnette</span>
     </div>
 
-    <div class="point restaurant" data-img="../restaurants/colonel_hathi.jpg" data-title="Colonel Hathi's Pizza Outpost" style="top:40%; left:70%;">
+    <div class="point restaurant" data-img="../restaurants/colonel_hathi.jpg" data-title="Colonel Hathi's Pizza Outpost" style="top:35%; left:20%;">
         <span class="tooltip">Colonel Hathi's Pizza Outpost</span>
     </div>
 
-    <div class="point restaurant" data-img="../restaurants/hakuna_matata.jpg" data-title="Restaurant Hakuna Matata" style="top:45%; left:75%;">
+    <div class="point restaurant" data-img="../restaurants/hakuna_matata.jpg" data-title="Restaurant Hakuna Matata" style="top:40%; right:67%;">
         <span class="tooltip">Restaurant Hakuna Matata</span>
     </div>
 
-    <div class="point restaurant" data-img="../restaurants/agrabah.jpg" data-title="Agrabah Café Restaurant" style="top:50%; left:20%;">
+    <div class="point restaurant" data-img="../restaurants/agrabah.jpg" data-title="Agrabah Café Restaurant" style="top:33%; left:40%;">
         <span class="tooltip">Agrabah Café Restaurant</span>
     </div>
 
@@ -479,7 +479,7 @@ document.querySelectorAll(".dropbtn").forEach(btn => {
     <span class="tooltip">Rencontre avec Mickey</span>
   </div>
 
-Restaurants
+<!-- Restaurants -->
 
 <div class="point restaurant" data-img="../restaurants/bistrot_remy.jpg" data-title="Bistrot Chez Rémy" style="top:20%; left:20%;">
     <span class="tooltip">Bistrot Chez Rémy</span>
@@ -607,36 +607,28 @@ function highlightPoint(name) {
     targetPoint.style.display = 'block';
 }
 
-function showSection(section) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('btn-' + section).classList.add('active');
+let currentMap = null;
+let currentSection = null;
+const validMaps = ['dlp', 'aw'];
+const validSections = ['attractions', 'spectacles', 'personnages', 'restaurants'];
+const sectionClassMap = {
+    attractions: 'attraction',
+    spectacles: 'spectacle',
+    personnages: 'personnage',
+    restaurants: 'restaurant'
+};
 
-    // Hide all points
-    document.querySelectorAll('.point').forEach(p => p.style.display = 'none');
+function getPointClassForSection(section) {
+    return sectionClassMap[section] || null;
+}
 
-    // Show points for the section only on the active map
-let className;
-
-if (section === 'attractions') {
-    className = 'attraction';
-}
-else if (section === 'spectacles') {
-    className = 'spectacle';
-}
-else if (section === 'personnages') {
-    className = 'personnage';
-}
-else if (section === 'restaurants') {
-    className = 'restaurant';
-}
-    const activeMap = document.querySelector('.map-container.active');
-    if (activeMap) {
-        const points = activeMap.querySelectorAll('.point.' + className);
-        points.forEach(p => p.style.display = 'block');
+function setActiveMap(name) {
+    if (!validMaps.includes(name)) {
+        name = 'dlp';
     }
-}
+    currentMap = name;
+    localStorage.setItem('searchPageActiveMap', name);
 
-function showMap(name) {
     document.querySelectorAll('.map-tab').forEach(tab => tab.classList.toggle('active', tab.id === `map-${name}-btn`));
     document.querySelectorAll('.map-container').forEach(container => container.classList.toggle('active', container.id === `map-${name}`));
 
@@ -644,13 +636,53 @@ function showMap(name) {
     if (title) {
         title.textContent = name === 'aw' ? 'Adventure World' : 'Disneyland Park';
     }
+}
 
-    // Re-apply current section filter to the new map
-    const activeBtn = document.querySelector('.filter-btn.active');
-    if (activeBtn) {
-        const section = activeBtn.id.replace('btn-', '');
-        showSection(section);
+function setActiveFilter(section) {
+    if (!validSections.includes(section)) {
+        section = 'attractions';
     }
+    currentSection = section;
+    localStorage.setItem('searchPageActiveFilter', section);
+
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.id === `btn-${section}`));
+}
+
+function updatePointsVisibility() {
+    const sectionClass = sectionClassMap[currentSection] || 'attraction';
+    document.querySelectorAll('.point').forEach(point => {
+        const mapContainer = point.closest('.map-container');
+        const isVisible = mapContainer?.classList.contains('active') && point.classList.contains(sectionClass);
+        point.style.display = isVisible ? 'block' : 'none';
+    });
+}
+
+function showSection(section) {
+    setActiveFilter(section);
+    updatePointsVisibility();
+}
+
+function showMap(name) {
+    setActiveMap(name);
+    updatePointsVisibility();
+}
+
+function getSavedMap() {
+    const map = localStorage.getItem('searchPageActiveMap');
+    return validMaps.includes(map) ? map : 'dlp';
+}
+
+function getSavedSection() {
+    const section = localStorage.getItem('searchPageActiveFilter');
+    return validSections.includes(section) ? section : 'attractions';
+}
+
+function initializeSearchPageState() {
+    currentMap = getSavedMap();
+    currentSection = getSavedSection();
+    setActiveMap(currentMap);
+    setActiveFilter(currentSection);
+    updatePointsVisibility();
 }
 
 const MIN_TRAVEL_MINUTES = 20;
@@ -830,15 +862,7 @@ document.getElementById('find-nearest-show').addEventListener('click', () => {
 
 renderAllShows();
 
-// Initialize with personnages and Adventure World
-showMap('aw');
-showSection('personnages');
-// Ensure all non-active points are hidden
-document.querySelectorAll('.point').forEach(p => {
-    if (p.style.display !== 'block') {
-        p.style.display = 'none';
-    }
-});
+initializeSearchPageState();
 </script>
 
 <!-- Modal pour aperçus -->

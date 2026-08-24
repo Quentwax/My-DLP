@@ -102,7 +102,7 @@ const badges = [
     { id: "mickey_magicien", category: "shows", name: "Mickey et le Magicien", image: "mickey_magicien.png" },
     { id: "cascade_of_lights", category: "shows", name: "Cascade Of Lights", image: "cascade_of_lights.png" },
     { id: "tales_of_magic", category: "shows", name: "Tales of Magic", image: "tales_of_magic.png" },
-    { id: "philarmagique", category: "shows", name: "Mickey et son Orchestre Philharmagique", image: "philarmagique.png" },
+    { id: "philarmagique", category: "shows", name: "Mickey et son Orchestre Philharmagique", image: "philharmagique.png" },
     { id: "splashes_of_colour", category: "shows", name: "A Million Splashes of Colour", image: "splashes_of_colour.png" },
     { id: "animation_academy", category: "shows", name: "Animation Academy", image: "animation_academy.png" },
     { id: "celebration_arendelle", category: "shows", name: "Célébration à Arendelle", image: "celebration_arendelle.png" },
