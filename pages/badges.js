@@ -98,6 +98,7 @@ const badges = [
     { id: "roi_lion", category: "shows", name: "Le Roi Lion et les Rythmes de la Terre", image: "roi_lion.png" },
     { id: "together", category: "shows", name: "Together", image: "together.png" },
     { id: "stars_on_parade", category: "shows", name: "Stars on Parade", image: "stars_on_parade.png" },
+    { id: "princess_cavalcade", category: "shows", name: "La Cavalcade des Princesses", image: "cavalcade.png" },
     { id: "dreams_factory", category: "shows", name: "La Fabrique des Rêves de Minnie", image: "dreams_factory.png" },
     { id: "mickey_magicien", category: "shows", name: "Mickey et le Magicien", image: "mickey_magicien.png" },
     { id: "cascade_of_lights", category: "shows", name: "Cascade Of Lights", image: "cascade_of_lights.png" },

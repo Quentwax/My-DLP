@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personnages rencontrés - My Disneyland Paris</title>
+<link rel="icon" href="../favicon2.png">
+<link href="../style.css" rel="stylesheet">
+</head>
+<body>
+<header class="nav">
+    <a href="../index.html" class="logo">✨ Disneyland</a>
+    <a href="../planning.html" class="dropbtn">Planning</a>
+    <a href="badges.html" class="dropbtn">Badges</a>
+    <a href="personnages.html" class="dropbtn" aria-current="page">Personnages vus</a>
+    <a href="recherche.html" class="dropbtn">🔍</a>
+</header>
+
+<main class="character-page">
+    <div class="character-heading">
+        <p class="character-kicker">Carnet de rencontres</p>
+        <h1>Personnages rencontrés</h1>
+        <p>Retrouve les personnages vus au parc, avec le souvenir et la date.</p>
+    </div>
+
+    <section class="character-form-section" aria-labelledby="character-form-title">
+        <div class="character-form-heading">
+            <h2 id="character-form-title">Ajouter une rencontre</h2>
+            <span id="auth-status" role="status">Connexion requise pour ajouter une rencontre.</span>
+        </div>
+        <form id="character-form" class="character-form" hidden>
+            <label>
+                Personnage
+                <input id="character-name" name="name" type="text" maxlength="80" placeholder="Ex. Aurore" required>
+            </label>
+            <label>
+                Date de la rencontre
+                <input id="character-date" name="date" type="date" required>
+            </label>
+            <label class="character-photo-field">
+                Photo
+                <input id="character-photo" name="photo" type="file" accept="image/*" required>
+            </label>
+            <div id="photo-preview-wrap" class="photo-preview-wrap" hidden>
+                <img id="photo-preview" alt="Aperçu de la photo choisie">
+            </div>
+            <button id="save-character" class="character-save-button" type="submit">Ajouter à mes souvenirs</button>
+        </form>
+        <button id="auth-button" class="character-auth-button" type="button">Se connecter avec Google</button>
+    </section>
+
+    <section class="character-list-section" aria-labelledby="character-list-title">
+        <div class="character-list-heading">
+            <h2 id="character-list-title">Mes rencontres</h2>
+            <span id="character-count">0 souvenir</span>
+        </div>
+        <p id="character-empty" class="character-empty">Chargement des souvenirs…</p>
+        <div id="character-grid" class="character-grid"></div>
+    </section>
+</main>
+
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { deleteObject, getDownloadURL, getStorage, ref as storageRef, uploadBytes } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBb-2GlOsnUDzDXZ8-mgd6XIr8ny4ZkJoo",
+  authDomain: "my-disneyland-paris.firebaseapp.com",
+  databaseURL: "https://my-disneyland-paris-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "my-disneyland-paris",
+  storageBucket: "my-disneyland-paris.firebasestorage.app",
+  messagingSenderId: "787833723893",
+  appId: "1:787833723893:web:0cd3c3f0f01dd7e8c09ebc"
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const storage = getStorage(app);
+const provider = new GoogleAuthProvider();
+const sightingsRef = ref(db, "characters/sightings");
+const form = document.getElementById("character-form");
+const photoInput = document.getElementById("character-photo");
+const photoPreviewWrap = document.getElementById("photo-preview-wrap");
+const photoPreview = document.getElementById("photo-preview");
+const authButton = document.getElementById("auth-button");
+const authStatus = document.getElementById("auth-status");
+const saveButton = document.getElementById("save-character");
+const grid = document.getElementById("character-grid");
+const emptyMessage = document.getElementById("character-empty");
+const count = document.getElementById("character-count");
+let currentUser = null;
+let sightings = {};
+
+document.getElementById("character-date").value = new Date().toLocaleDateString("en-CA");
+
+photoInput.addEventListener("change", () => {
+  const file = photoInput.files[0];
+  if (!file) {
+    photoPreviewWrap.hidden = true;
+    photoPreview.removeAttribute("src");
+    return;
+  }
+  photoPreview.src = URL.createObjectURL(file);
+  photoPreviewWrap.hidden = false;
+});
+
+authButton.addEventListener("click", async () => {
+  try {
+    if (currentUser) {
+      await signOut(auth);
+    } else {
+      await signInWithPopup(auth, provider);
+    }
+  } catch (error) {
+    alert(`Connexion impossible : ${error.message}`);
+  }
+});
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!currentUser) return;
+
+  const file = photoInput.files[0];
+  if (!file || !file.type.startsWith("image/")) {
+    alert("Choisis une photo au format image.");
+    return;
+  }
+
+  saveButton.disabled = true;
+  saveButton.textContent = "Enregistrement…";
+  let uploadedPhotoRef = null;
+  try {
+    const sightingRef = push(sightingsRef);
+    uploadedPhotoRef = storageRef(storage, `characters/${currentUser.uid}/${sightingRef.key}`);
+    const image = await resizeImage(file);
+    const uploadedPhoto = await uploadBytes(uploadedPhotoRef, image, { contentType: "image/jpeg" });
+    const photoUrl = await getDownloadURL(uploadedPhoto.ref);
+    await set(sightingRef, {
+      name: document.getElementById("character-name").value.trim(),
+      date: document.getElementById("character-date").value,
+      photoUrl,
+      photoPath: uploadedPhotoRef.fullPath,
+      userId: currentUser.uid,
+      createdAt: Date.now()
+    });
+    form.reset();
+    document.getElementById("character-date").value = new Date().toLocaleDateString("en-CA");
+    photoPreviewWrap.hidden = true;
+    photoPreview.removeAttribute("src");
+  } catch (error) {
+    if (uploadedPhotoRef) {
+      try { await deleteObject(uploadedPhotoRef); } catch { /* aucun fichier à nettoyer */ }
+    }
+    alert(`Enregistrement impossible : ${error.message}`);
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = "Ajouter à mes souvenirs";
+  }
+});
+
+function resizeImage(file) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    image.onload = () => {
+      const scale = Math.min(1, 1200 / Math.max(image.width, image.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(image.width * scale);
+      canvas.height = Math.round(image.height * scale);
+      canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(objectUrl);
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("La photo n'a pas pu être préparée.")), "image/jpeg", 0.82);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Cette photo ne peut pas être lue."));
+    };
+    image.src = objectUrl;
+  });
+}
+
+function renderSightings() {
+  const entries = Object.entries(sightings).sort(([, first], [, second]) =>
+    (second.date || "").localeCompare(first.date || "") || (second.createdAt || 0) - (first.createdAt || 0)
+  );
+  grid.replaceChildren();
+  count.textContent = `${entries.length} ${entries.length > 1 ? "souvenirs" : "souvenir"}`;
+  emptyMessage.hidden = entries.length > 0;
+  emptyMessage.textContent = currentUser ? "Aucune rencontre enregistrée pour le moment." : "Connecte-toi pour consulter tes rencontres.";
+
+  for (const [id, sighting] of entries) {
+    const card = document.createElement("article");
+    card.className = "character-card";
+    const image = document.createElement("img");
+    image.className = "character-card-photo";
+    image.src = sighting.photoUrl;
+    image.alt = `Photo de ${sighting.name || "personnage"}`;
+    image.loading = "lazy";
+    const details = document.createElement("div");
+    details.className = "character-card-details";
+    const name = document.createElement("h3");
+    name.textContent = sighting.name || "Personnage";
+    const date = document.createElement("time");
+    date.dateTime = sighting.date || "";
+    date.textContent = sighting.date ? new Date(`${sighting.date}T12:00:00`).toLocaleDateString("fr-FR", { dateStyle: "long" }) : "Date inconnue";
+    details.append(name, date);
+    card.append(image, details);
+
+    if (currentUser && sighting.userId === currentUser.uid) {
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "character-delete-button";
+      deleteButton.type = "button";
+      deleteButton.textContent = "Supprimer";
+      deleteButton.setAttribute("aria-label", `Supprimer le souvenir ${sighting.name || "personnage"}`);
+      deleteButton.addEventListener("click", async () => {
+        if (!confirm(`Supprimer le souvenir de ${sighting.name || "ce personnage"} ?`)) return;
+        try {
+          await remove(ref(db, `characters/sightings/${id}`));
+          if (sighting.photoPath) await deleteObject(storageRef(storage, sighting.photoPath));
+        } catch (error) {
+          alert(`Suppression impossible : ${error.message}`);
+        }
+      });
+      details.append(deleteButton);
+    }
+    grid.append(card);
+  }
+}
+
+onValue(sightingsRef, snapshot => {
+  sightings = snapshot.val() || {};
+  renderSightings();
+}, error => {
+  emptyMessage.hidden = false;
+  emptyMessage.textContent = `Chargement impossible : ${error.message}`;
+});
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  form.hidden = !user;
+  authButton.textContent = user ? `Se déconnecter (${user.email})` : "Se connecter avec Google";
+  authStatus.textContent = user ? `Connecté en tant que ${user.email}` : "Connexion requise pour ajouter une rencontre.";
+  renderSightings();
+});
+</script>
+</body>
+</html>
